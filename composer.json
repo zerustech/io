@@ -1,0 +1,20 @@
+{
+    "name": "zerustech/io",
+    "description": "ZerusTech IO Component",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Michael Lee",
+            "email": "michael.lee@zerustech.com"
+        }
+    ],
+    "require": {
+    },
+    "autoload": {
+        "psr-4": {
+            "ZerusTech\\Component\\IO\\": ".",
+            "ZerusTech\\Component\\IO\\Tests\\": "./Tests"
+        }
+    }
+}
