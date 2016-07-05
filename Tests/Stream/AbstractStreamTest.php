@@ -10,7 +10,7 @@
  */
 namespace ZerusTech\Component\IO\Tests\Stream;
 
-use ZerusTech\Component\IO\Stream;
+use ZerusTech\Component\IO\Stream\AbstractStream;
 
 /**
  * Test case for abstract stream.
@@ -26,7 +26,7 @@ class AbstractStreamTest extends \PHPUnit_Framework_TestCase
     {
         $resource = @fopen($source, $mode);
 
-        $stub = $this->getMockForAbstractClass(Stream\AbstractStream::class, [$resource]);
+        $stub = $this->getMockForAbstractClass("ZerusTech\\Component\\IO\\Stream\\AbstractStream", [$resource]);
 
         $this->assertSame($resource, $stub->getResource());
 
@@ -46,7 +46,7 @@ class AbstractStreamTest extends \PHPUnit_Framework_TestCase
     public function testClose()
     {
         $resource = fopen('php://memory', 'rb');
-        $stub = $this->getMockForAbstractClass(Stream\AbstractStream::class, [$resource]);
+        $stub = $this->getMockForAbstractClass("ZerusTech\\Component\\IO\\Stream\\AbstractStream", [$resource]);
         $stub->close();
     }
 }

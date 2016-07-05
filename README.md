@@ -1,3 +1,5 @@
+[![Build Status](https://api.travis-ci.org/zerustech/io.svg?branch=master)](https://travis-ci.org/zerustech/io)
+
 ZerusTech IO Component
 ================================================
 The *ZerusTech IO Component* provides some commonly used I/O related classes,
@@ -83,6 +85,7 @@ References
 * [The zerustech/terminal project][1]
 
 [1]:  https://github.com/zerustech/terminal "The zerustech/terminal Project"
+[2]:  https://opensource.org/licenses/MIT "The MIT License (MIT)"
 
 License
 -------
