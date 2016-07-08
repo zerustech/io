@@ -2,6 +2,7 @@
     "name": "zerustech/io",
     "description": "ZerusTech IO Component",
     "type": "library",
+    "keywords": ["io", "stream", "string input stream"],  
     "license": "MIT",
     "authors": [
         {
