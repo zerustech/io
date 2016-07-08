@@ -5,7 +5,7 @@ ZerusTech IO Component
 The *ZerusTech IO Component* provides some commonly used I/O related classes,
 such as some input stream and output stream classes.
 
-This library was developed along with the [zerustech/terminal][2] component, when we
+This library was developed along with the [zerustech/terminal][4] component, when we
 could not find the stream implementations that best fit our requirements.
 
 Installation
@@ -82,12 +82,14 @@ $out->write('hello, world!');
 
 References
 ----------
-* [The zerustech/terminal project][2]
+* [The zerustech/io project][2]
 * [The zerustech/threaded project][3]
+* [The zerustech/terminal project][4]
 
 [1]:  https://opensource.org/licenses/MIT "The MIT License (MIT)"
-[2]:  https://github.com/zerustech/terminal "The zerustech/terminal Project"
+[2]:  https://github.com/zerustech/io "The zerustech/io Project"
 [3]:  https://github.com/zerustech/threaded "The zerustech/threaded Project"
+[4]:  https://github.com/zerustech/terminal "The zerustech/terminal Project"
 
 License
 -------
