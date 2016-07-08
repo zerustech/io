@@ -23,7 +23,7 @@ class FileInputStreamTest extends \PHPUnit_Framework_TestCase
 {
     public function setup()
     {
-        $this->base = __DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Fixtures'.DIRECTORY_SEPARATOR;
+        $this->base = __DIR__.'/../../Fixtures/';
     }
 
     public function tearDown()
