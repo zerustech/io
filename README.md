@@ -1,3 +1,5 @@
+[![Build Status](https://api.travis-ci.org/zerustech/io.svg?branch=master)](https://travis-ci.org/zerustech/io)
+
 ZerusTech IO Component
 ================================================
 The *ZerusTech IO Component* provides some commonly used I/O related classes,

@@ -17,5 +17,10 @@
             "ZerusTech\\Component\\IO\\": ".",
             "ZerusTech\\Component\\IO\\Tests\\": "./Tests"
         }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0.x-dev"
+        }
     }
 }
