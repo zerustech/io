@@ -1,4 +1,4 @@
-[![Build Status](https://api.travis-ci.org/zerustech/io.svg?branch=master)](https://travis-ci.org/zerustech/io)
+[![Build Status](https://api.travis-ci.org/zerustech/io.svg?branch=v1.0.1)](https://travis-ci.org/zerustech/io)
 
 ZerusTech IO Component
 ================================================
