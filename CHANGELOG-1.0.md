@@ -7,6 +7,13 @@ This changelog references the relavant changes (bug and security fixes) done in
 To get the new features in this major release, check the list at the bottom of
 this file.
 
+* 1.0.4
+    * Removed composer.lock
+    * Removed dev-master alias from composer.json
+    * Moved all source files to /src
+    * Synchronized class changes from 1.1 reversely - this is an one-off
+      workaround to fix the version tree.
+
 * 1.0.3
     * Added composer.lock
 
