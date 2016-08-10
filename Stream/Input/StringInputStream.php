@@ -46,24 +46,6 @@ class StringInputStream extends AbstractInputStream
     }
 
     /**
-     * Gets the buffer.
-     * @return string The buffer.
-     */
-    public function getBuffer()
-    {
-        return $this->buffer;
-    }
-
-    /**
-     * Gets the index of the next byte to read.
-     * @return int The index.
-     */
-    public function getPosition()
-    {
-        return $this->position;
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function read($length = 1)

@@ -21,11 +21,29 @@ use ZerusTech\Component\IO\Exception;
  */
 class StringInputStreamTest extends \PHPUnit_Framework_TestCase
 {
+    public function setup()
+    {
+        $this->ref = new \ReflectionClass('ZerusTech\Component\IO\Stream\Input\StringInputStream');
+
+        $this->buffer = $this->ref->getProperty('buffer');
+        $this->buffer->setAccessible(true);
+
+        $this->position = $this->ref->getProperty('position');
+        $this->position->setAccessible(true);
+    }
+
+    public function tearDown()
+    {
+        $this->position = null;
+        $this->buffer = null;
+        $this->ref = null;
+    }
+
     public function testConstructor()
     {
         $stream = new Input\StringInputStream('hello');
-        $this->assertEquals('hello', $stream->getBuffer());
-        $this->assertEquals(0, $stream->getPosition());
+        $this->assertEquals('hello', $this->buffer->getValue($stream));
+        $this->assertEquals(0, $this->position->getValue($stream));
         $this->assertFalse($stream->isClosed());
     }
 
@@ -53,8 +71,8 @@ class StringInputStreamTest extends \PHPUnit_Framework_TestCase
         $stream = new Input\StringInputStream('hello');
         $this->assertSame($stream, $stream->close());
         $this->assertTrue($stream->isClosed());
-        $this->assertEquals(0, $stream->getPosition());
-        $this->assertNull($stream->getBuffer());
+        $this->assertEquals(0, $this->position->getValue($stream));
+        $this->assertNull($this->buffer->getValue($stream));
     }
 
     /**

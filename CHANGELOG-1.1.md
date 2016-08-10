@@ -7,7 +7,12 @@ This changelog references the relavant changes (bug and security fixes) done in
 To get the new features in this major release, check the list at the bottom of
 this file.
 
-* 1.1.1 (2016-01-10)
+* 1.1.2 (2016-08-10)
+    * Add sample for ``BufferedInputStream``
+    * Removed ``getBuffer()`` from ``StringInputStream``
+    * Removed ``getPosition()`` from ``StringInputStream`` 
+
+* 1.1.1 (2016-08-10)
     * Changed alias of dev-master to 1.2-dev
 
 * 1.1.0 (2016-08-10)

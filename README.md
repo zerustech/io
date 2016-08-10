@@ -63,6 +63,80 @@ printf("%s\n", $string);
 
 ```
 
+### BufferedInputStream ###
+
+This class allows an application to create an input stream that buffers input
+from an underlying implementation.
+
+```php
+<?php
+
+require_once __DIR__.'/vendor/autoload.php';
+
+use ZerusTech\Component\IO\Stream\Input\StringInputStream;
+use ZerusTech\Component\IO\Stream\Input\BufferedInputStream;
+
+$input = new StringInputStream("0123456789ABCDEF");
+
+$buffer = new BufferedInputStream($input, 4);
+
+//  buffer:
+//  ------
+//  0123 
+// ^ (mark)
+//    ^ (pos)
+//      ^ (count)
+$buffer->skip(2);
+
+//  buffer:
+//  -------
+//  0123 
+//    ^ (mark)
+//    ^ (pos)
+//      ^ (count)
+$buffer->mark(6);
+
+//  buffer:
+//  -------
+//  01234567
+//    ^ (mark)
+//         ^ (pos)
+//          ^ (count)
+$string = $buffer->read(5);
+
+printf("%s\n", $string); // "23456"
+
+//  buffer:
+//  -------
+//  01234567
+//    ^ (mark)
+//    ^ (pos)
+//          ^ (count)
+$buffer->reset();
+
+//  buffer:
+//  -------
+//  01234567
+//    ^ (mark)
+//       ^ (pos)
+//          ^ (count)
+$string = $buffer->read(3);
+
+printf("%s\n", $string); // "234"
+
+//  buffer:
+//  -------
+//  89AB
+// ^ (mark)
+//   ^ (pos)
+//      ^ (count)
+$string = $buffer->read(4);
+
+printf("%s\n", $string); // "5678"
+
+```
+
+
 ### FileOutputStream ###
 
 A file output stream is an output stream for writing data to a file.
