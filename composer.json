@@ -15,7 +15,7 @@
     },
     "autoload": {
         "psr-4": {
-            "ZerusTech\\Component\\IO\\": ".",
+            "ZerusTech\\Component\\IO\\": "./src",
             "ZerusTech\\Component\\IO\\Tests\\": "./Tests"
         }
     },
