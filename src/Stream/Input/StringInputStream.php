@@ -11,7 +11,6 @@
 
 namespace ZerusTech\Component\IO\Stream\Input;
 
-use ZerusTech\Component\IO\Stream\AbstractStream;
 use ZerusTech\Component\IO\Exception\IOException;
 
 /**
@@ -20,17 +19,17 @@ use ZerusTech\Component\IO\Exception\IOException;
  *
  * @author Michael Lee <michael.lee@zerustech.com>
  */
-class StringInputStream extends AbstractStream implements InputStreamInterface
+class StringInputStream extends AbstractInputStream
 {
     /**
      * @var string The string from which bytes are read.
      */
-    protected $buffer;
+    private $buffer;
 
     /**
-     * @var int The index of the next byte to read from the input stream.
+     * @var int The index of the next byte that will be read from the buffer.
      */
-    protected $position;
+    private $position;
 
     /**
      * Constructor.
@@ -39,29 +38,11 @@ class StringInputStream extends AbstractStream implements InputStreamInterface
      */
     public function __construct($buffer)
     {
+        parent::__construct();
+
         $this->buffer = $buffer;
 
         $this->position = 0;
-
-        $this->closed = false;
-    }
-
-    /**
-     * Gets the buffer.
-     * @return string The buffer.
-     */
-    public function getBuffer()
-    {
-        return $this->buffer;
-    }
-
-    /**
-     * Gets the index of the next byte to read.
-     * @return int The index.
-     */
-    public function getPosition()
-    {
-        return $this->position;
     }
 
     /**
@@ -103,5 +84,13 @@ class StringInputStream extends AbstractStream implements InputStreamInterface
         $this->buffer = null;
 
         return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function available()
+    {
+        return strlen($this->buffer) - $this->position;
     }
 }

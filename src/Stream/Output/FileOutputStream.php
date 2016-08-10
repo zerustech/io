@@ -11,8 +11,6 @@
 
 namespace ZerusTech\Component\IO\Stream\Output;
 
-use ZerusTech\Component\IO\Stream\AbstractStream;
-use ZerusTech\Component\IO\Stream\FlushableInterface;
 use ZerusTech\Component\IO\Stream\Input\FileInputStream;
 use ZerusTech\Component\IO\Exception\IOException;
 
@@ -22,17 +20,22 @@ use ZerusTech\Component\IO\Exception\IOException;
  * @author Michael Lee <michael.lee@zerustech.com>
  * @see FileInputStream
  */
-class FileOutputStream extends AbstractStream implements OutputStreamInterface, FlushableInterface
+class FileOutputStream extends AbstractOutputStream
 {
     /**
      * @var string The path to the file to be opened for writing.
      */
-    protected $source;
+    private $source;
 
     /**
      * @var string The type of access to the opened file.
      */
-    protected $mode;
+    private $mode;
+
+    /**
+     * @var resource The resource being held by current stream.
+     */
+    private $resource;
 
     /**
      * Constructor.
@@ -42,20 +45,15 @@ class FileOutputStream extends AbstractStream implements OutputStreamInterface, 
      */
     public function __construct($source, $mode)
     {
+        parent::__construct();
+
         $this->source = $source;
 
         $this->mode = $mode;
 
-        $resource = @fopen($source, $mode);
+        $this->resource = @fopen($source, $mode);
 
-        if (false === $resource) {
-
-            $this->closed = true;
-
-        } else {
-
-            parent::__construct($resource);
-        }
+        $this->closed = false === $this->resource ? true : false;
     }
 
     /**

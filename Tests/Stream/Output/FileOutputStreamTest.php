@@ -21,6 +21,22 @@ use ZerusTech\Component\IO\Exception;
  */
 class FileOutputStreamTest extends \PHPUnit_Framework_TestCase
 {
+    public function setup()
+    {
+        $this->ref = new \ReflectionClass('ZerusTech\Component\IO\Stream\Output\FileOutputStream');
+
+        $this->resourceProperty = $this->ref->getProperty('resource');
+
+        $this->resourceProperty->setAccessible(true);
+    }
+
+    public function tearDown()
+    {
+        $this->ref = null;
+
+        $this->resource = null;
+    }
+
     /**
      * @dataProvider getDataForTestConstructor
      */
@@ -34,7 +50,7 @@ class FileOutputStreamTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($closed, $stream->isClosed());
 
-        $resource = $stream->getResource();
+        $resource = $this->resourceProperty->getValue($stream);
 
         if ($resource) {
 
@@ -60,7 +76,7 @@ class FileOutputStreamTest extends \PHPUnit_Framework_TestCase
 
         $stream->write('hello');
 
-        $resource = $stream->getResource();
+        $resource = $this->resourceProperty->getValue($stream);
 
         rewind($resource);
 
@@ -87,7 +103,7 @@ class FileOutputStreamTest extends \PHPUnit_Framework_TestCase
     public function testWriteOnClosedFile()
     {
         $stream = new Output\FileOutputStream('php://memory', 'wb');
-        $resource = $stream->getResource();
+        $resource = $this->resourceProperty->getValue($stream);
         fclose($resource);
         $stream->write('hello');
     }
@@ -116,7 +132,7 @@ class FileOutputStreamTest extends \PHPUnit_Framework_TestCase
     public function testFlushOnClosedFile()
     {
         $stream = new Output\FileOutputStream('php://memory', 'wb');
-        $resource = $stream->getResource();
+        $resource = $this->resourceProperty->getValue($stream);
         fclose($resource);
         $stream->flush();
     }
@@ -126,7 +142,7 @@ class FileOutputStreamTest extends \PHPUnit_Framework_TestCase
         $stream = new Output\FileOutputStream('php://memory', 'wb');
         $this->assertSame($stream, $stream->close());
         $this->assertTrue($stream->isClosed());
-        $this->assertNull($stream->getResource());
+        $this->assertNull($this->resourceProperty->getValue($stream));
     }
 
     /**
@@ -150,7 +166,7 @@ class FileOutputStreamTest extends \PHPUnit_Framework_TestCase
     {
         $stream = new Output\FileOutputStream('php://memory', 'wb');
 
-        $resource = $stream->getResource();
+        $resource = $this->resourceProperty->getValue($stream);
 
         fclose($resource);
 

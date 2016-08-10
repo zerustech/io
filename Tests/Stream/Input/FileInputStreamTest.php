@@ -24,11 +24,21 @@ class FileInputStreamTest extends \PHPUnit_Framework_TestCase
     public function setup()
     {
         $this->base = __DIR__.'/../../Fixtures/';
+
+        $this->ref = new \ReflectionClass('ZerusTech\Component\IO\Stream\Input\FileInputStream');
+
+        $this->resourceProperty = $this->ref->getProperty('resource');
+
+        $this->resourceProperty->setAccessible(true);
     }
 
     public function tearDown()
     {
         $this->base = null;
+
+        $this->resourceProperty = null;
+
+        $this->ref = null;
     }
 
     /**
@@ -46,7 +56,7 @@ class FileInputStreamTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($closed, $stream->isClosed());
 
-        $resource = $stream->getResource();
+        $resource = $this->resourceProperty->getValue($stream);
 
         if ($resource) {
 
@@ -56,6 +66,11 @@ class FileInputStreamTest extends \PHPUnit_Framework_TestCase
 
             $this->assertEquals($mode, $meta['mode']);
         }
+
+        $ref = new \ReflectionClass('ZerusTech\Component\IO\Stream\Input\FileInputStream');
+        $property = $ref->getProperty('position');
+        $property->setAccessible(true);
+        $this->assertEquals(0, $property->getValue($stream));
     }
 
     public function getDataForTestConstructor()
@@ -81,7 +96,7 @@ class FileInputStreamTest extends \PHPUnit_Framework_TestCase
     {
         $stream = new Input\FileInputStream($this->base.'input_01.txt', 'rb');
 
-        $resource = $stream->getResource();
+        $resource = $this->resourceProperty->getValue($stream);
 
         fclose($resource);
 
@@ -96,7 +111,12 @@ class FileInputStreamTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($stream->isClosed());
 
-        $this->assertNull($stream->getResource());
+        $this->assertNull($this->resourceProperty->getValue($stream));
+
+        $ref = new \ReflectionClass('ZerusTech\Component\IO\Stream\Input\FileInputStream');
+        $property = $ref->getProperty('position');
+        $property->setAccessible(true);
+        $this->assertEquals(0, $property->getValue($stream));
     }
 
     /**
@@ -120,10 +140,29 @@ class FileInputStreamTest extends \PHPUnit_Framework_TestCase
     {
         $stream = new Input\FileInputStream($this->base.'input_01.txt', 'rb');
 
-        $resource = $stream->getResource();
+        $resource = $this->resourceProperty->getValue($stream);
 
         fclose($resource);
 
         $stream->close();
+    }
+
+    public function testAvaialble()
+    {
+        $stream = new Input\FileInputStream($this->base.'input_01.txt', 'rb');
+
+        $this->assertEquals(14, $stream->available());
+
+        $stream->skip(4);
+
+        $this->assertEquals(10, $stream->available());
+
+        $stream->skip(10);
+
+        $this->assertEquals(0, $stream->available());
+
+        $stream->skip(1);
+
+        $this->assertEquals(0, $stream->available());
     }
 }
