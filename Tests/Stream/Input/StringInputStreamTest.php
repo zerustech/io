@@ -26,7 +26,6 @@ class StringInputStreamTest extends \PHPUnit_Framework_TestCase
         $stream = new Input\StringInputStream('hello');
         $this->assertEquals('hello', $stream->getBuffer());
         $this->assertEquals(0, $stream->getPosition());
-        $this->assertNull($stream->getResource());
         $this->assertFalse($stream->isClosed());
     }
 
@@ -67,5 +66,24 @@ class StringInputStreamTest extends \PHPUnit_Framework_TestCase
         $stream = new Input\StringInputStream('hello');
         $stream->close();
         $stream->close();
+    }
+
+    public function testAvailable()
+    {
+        $stream = new Input\StringInputStream('hello, world!');
+
+        $this->assertEquals(13, $stream->available());
+
+        $stream->skip(3);
+
+        $this->assertEquals(10, $stream->available());
+
+        $stream->skip(10);
+
+        $this->assertEquals(0, $stream->available());
+
+        $stream->skip(1);
+
+        $this->assertEquals(0, $stream->available());
     }
 }

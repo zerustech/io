@@ -12,7 +12,6 @@
 namespace ZerusTech\Component\IO\Stream\Input;
 
 use ZerusTech\Component\IO\Exception\IOException;
-use ZerusTech\Component\IO\Stream\AbstractStream;
 
 /**
  * A file input stream obtains input bytes from a file.
@@ -22,37 +21,53 @@ use ZerusTech\Component\IO\Stream\AbstractStream;
  *
  * @author Michael Lee <michael.lee@zerustech.com>
  */
-class FileInputStream extends AbstractStream implements InputStreamInterface
+class FileInputStream extends AbstractInputStream
 {
     /**
      * @var string The path to the file to be opened for reading.
      */
-    protected $source;
+    private $source;
 
     /**
      * @var string The type of access to the opened file.
      */
-    protected $mode;
+    private $mode;
 
     /**
-     * Constructor.
+     * @var int The index of the next byte that will be read from the
+     * underlying file.
+     */
+    private $position;
+
+    /**
+     * @var resource The resource that represents the underlying file.
+     */
+    private $resource;
+
+    /**
+     * Create a new file input stream instance.
      *
      * @param string $source The file path.
      * @param string $mode The accessing mode.
      */
     public function __construct($source, $mode)
     {
+        parent::__construct();
+
         $this->source = $source;
 
         $this->mode = $mode;
 
-        $resource = @fopen($source, $mode);
+        $this->position = 0;
 
-        parent::__construct($resource);
+        $this->resource = @fopen($source, $mode);
+
+        $this->closed = false === $this->resource ? true : false;
     }
 
     /**
      * Gets the file path.
+     *
      * @return string The file path.
      */
     public function getSource()
@@ -62,6 +77,7 @@ class FileInputStream extends AbstractStream implements InputStreamInterface
 
     /**
      * Gets the access mode.
+     *
      * @return string The access mode.
      */
     public function getMode()
@@ -88,6 +104,8 @@ class FileInputStream extends AbstractStream implements InputStreamInterface
 
         $this->resource = null;
 
+        $this->position = 0;
+
         return $this;
     }
 
@@ -108,6 +126,16 @@ class FileInputStream extends AbstractStream implements InputStreamInterface
             throw new IOException(sprintf("An unknown error occured when reading data from file %s.", $this->source));
         }
 
+        $this->position += strlen($data);
+
         return $data;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function available()
+    {
+        return filesize($this->source) - $this->position;
     }
 }

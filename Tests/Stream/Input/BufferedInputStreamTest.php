@@ -1,0 +1,693 @@
+<?php
+
+/**
+ * This file is part of the ZerusTech package.
+ *
+ * (c) Michael Lee <michael.lee@zerustech.com>
+ *
+ * For full copyright and license information, please view the LICENSE file that
+ * was distributed with this source code.
+ */
+
+namespace ZerusTech\Component\IO\Tests\Stream\Input;
+
+use ZerusTech\Component\IO\Stream\Input\BufferedInputStream;
+use ZerusTech\Component\IO\Stream\Input\StringInputStream;
+
+/**
+ * Test case for buffered input stream.
+ *
+ * @author Michael Lee <michael.lee@zerustech.com>
+ */
+class BufferedInputStreamTest extends \PHPUnit_Framework_TestCase
+{
+    public function setup()
+    {
+        $this->ref = new \ReflectionClass('ZerusTech\Component\IO\Stream\Input\BufferedInputStream');
+
+        $this->buffer = $this->ref->getProperty('buffer');
+        $this->buffer->setAccessible(true);
+
+        $this->bufferSize = $this->ref->getProperty('bufferSize');
+        $this->bufferSize->setAccessible(true);
+
+        $this->position = $this->ref->getProperty('position');
+        $this->position->setAccessible(true);
+
+        $this->count = $this->ref->getProperty('count');
+        $this->count->setAccessible(true);
+
+        $this->mark = $this->ref->getProperty('mark');
+        $this->mark->setAccessible(true);
+
+        $this->markLimit = $this->ref->getProperty('markLimit');
+        $this->markLimit->setAccessible(true);
+
+        $this->fillBuffer = $this->ref->getMethod('fillBuffer');
+        $this->fillBuffer->setAccessible(true);
+    }
+
+    public function tearDown()
+    {
+        $this->ref = null;
+        $this->bufferSize = $this->position = $this->count = null;
+        $this->mark = $this->markLimit = $this->fillBuffer = null;
+    }
+
+    public function testConstructor()
+    {
+        $in = new StringInputStream('hello, world');
+        $instance = new BufferedInputStream($in, 4);
+
+        $this->assertEquals(4, $this->bufferSize->getValue($instance));
+        $this->assertEquals(0, $this->position->getValue($instance));
+        $this->assertEquals(0, $this->count->getValue($instance));
+        $this->assertEquals(-1, $this->mark->getValue($instance));
+        $this->assertEquals(0, $this->markLimit->getValue($instance));
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testConstructorWithInvalidArgumentException()
+    {
+        $in = new StringInputStream('abc');
+        $instance = new BufferedInputStream($in, 0);
+    }
+
+    /**
+     * The fillBuffer() method is called only when there is no byte available in
+     * the buffer (post === count).
+     * All test cases in this method are based on this pre-requisite.
+     */
+    public function testFillBuffer()
+    {
+
+        $buffer = $this->buffer;
+
+        $position = $this->position;
+
+        $count = $this->count;
+
+        $mark = $this->mark;
+
+        $markLimit = $this->markLimit;
+
+        $fillBuffer = $this->fillBuffer;
+
+        // No mark exists (mark === -1), the method reads up to 'buffer size'
+        // bytes from the subordinate stream and overwrites current buffer with
+        // those bytes, so the number of bytes in the buffer can not surpass the
+        // value of 'buffer size'.
+        // ---------------------------------------------------------------------
+
+        //
+        // In this case, the buffer is empty and the number of bytes in the
+        // subordinate stream is greater than the 'buffer size'.
+        //
+        // The scenario is as follows:
+        //
+        // mark: -1
+        // limit: 4
+        // buffer size: 4
+        //
+        // Before filling:
+        // -----------------
+        // buffer:
+        // mark:  ^
+        // pos:    ^
+        // count:  ^
+        // available: 123456789ABCDEF
+        //
+        // After filling:
+        // -----------------
+        // buffer: 1234
+        // mark:  ^
+        // pos:    ^
+        // count:      ^
+        // available: 56789ABCDEF
+        $in = new StringInputStream('123456789ABCDEF');
+        $instance = new BufferedInputStream($in, 4);
+        $markLimit->setValue($instance, 4);
+        $mark->setValue($instance, -1);
+        $buffer->setValue($instance, '');
+        $position->setValue($instance, 0);
+        $count->setValue($instance, 0);
+        $fillBuffer->invoke($instance);
+        $this->assertEquals('1234', $buffer->getValue($instance));
+        $this->assertEquals(-1, $mark->getValue($instance));
+        $this->assertEquals(0, $position->getValue($instance));
+        $this->assertEquals(4, $count->getValue($instance));
+
+
+        // In this case, there are exactly 'buffer size' bytes in buffer and the
+        // number of bytes in the subordinate stream is less than the
+        // 'buffer size'.
+        //
+        // The scenario is as follows:
+        //
+        // mark: -1
+        // limit: 4
+        // buffer size: 4
+        //
+        // Before filling:
+        // -----------------
+        // buffer: GHIJ
+        // mark:  ^
+        // pos:        ^
+        // count:      ^
+        // available: 123
+        //
+        // After filling:
+        // -----------------
+        // buffer: 123
+        // mark:  ^
+        // pos:    ^
+        // count:     ^
+        // available:
+        $in = new StringInputStream('123');
+        $instance = new BufferedInputStream($in, 4);
+        $markLimit->setValue($instance, 4);
+        $mark->setValue($instance, -1);
+        $buffer->setValue($instance, 'GHIJ');
+        $position->setValue($instance, 4);
+        $count->setValue($instance, 4);
+        $fillBuffer->invoke($instance);
+        $this->assertEquals('123', $buffer->getValue($instance));
+        $this->assertEquals(-1, $mark->getValue($instance));
+        $this->assertEquals(0, $position->getValue($instance));
+        $this->assertEquals(3, $count->getValue($instance));
+
+
+        // In this case, both the buffer and the subordinate stream are empty.
+        //
+        // The scenario is as follows:
+        //
+        // mark: -1
+        // limit: 4
+        // buffer size: 4
+        //
+        // Before filling:
+        // -----------------
+        // buffer:
+        // mark:  ^
+        // pos:    ^
+        // count:  ^
+        // available:
+        //
+        // After filling:
+        // -----------------
+        // buffer:
+        // mark:  ^
+        // pos:    ^
+        // count:  ^
+        // available:
+        $in = new StringInputStream('');
+        $instance = new BufferedInputStream($in, 4);
+        $markLimit->setValue($instance, 4);
+        $mark->setValue($instance, -1);
+        $buffer->setValue($instance, '');
+        $position->setValue($instance, 0);
+        $count->setValue($instance, 0);
+        $fillBuffer->invoke($instance);
+        $this->assertEquals('', $buffer->getValue($instance));
+        $this->assertEquals(-1, $mark->getValue($instance));
+        $this->assertEquals(0, $position->getValue($instance));
+        $this->assertEquals(0, $count->getValue($instance));
+
+
+        // Mark exists (mark >= 0) and is still valid: pos - mark < limit, the
+        // method shifts all bytes after mark inclusively to the begining of the
+        // buffer, then reads up to 'buffer size' bytes from the subordinate
+        // stream and appends those bytes to the new end of the buffer. So the
+        // number of bytes in the buffer can surpass the value of 'buffer size'
+        // after filling.
+        //
+        // NOTE: when mark equals to 0, no byte will be shifted.
+        // --------------------------------------------------------------------
+
+        // In this case, the number of bytes in the buffer and the subordinate
+        // stream are both greater than the 'buffer size'.
+        //
+        // The scenario is as follows:
+        //
+        // mark: 1
+        // limit: 8
+        // buffer Size: 4
+        //
+        // Before filling:
+        // -----------------
+        // buffer: GHIJK
+        // mark:    ^
+        // pos:         ^
+        // count:       ^
+        // available: 123456789ABCDEF
+        //
+        // After filling:
+        // -----------------
+        // buffer: HIJK1234
+        // mark:   ^
+        // pos:       ^
+        // count:          ^
+        // available: 56789ABCDEF
+        $in = new StringInputStream('123456789ABCDEF');
+        $instance = new BufferedInputStream($in, 4);
+        $markLimit->setValue($instance, 8);
+        $mark->setValue($instance, 1);
+        $buffer->setValue($instance, 'GHIJK');
+        $position->setValue($instance, 5);
+        $count->setValue($instance, 5);
+        $fillBuffer->invoke($instance);
+        $this->assertEquals('HIJK1234', $buffer->getValue($instance));
+        $this->assertEquals(0, $mark->getValue($instance));
+        $this->assertEquals(4, $position->getValue($instance));
+        $this->assertEquals(8, $count->getValue($instance));
+
+        // In this case, the number of bytes in the buffer equals to the
+        // 'buffer size' and which of the subordinate stream is less than the
+        // 'buffer size'.
+        //
+        // The scenario is as follows:
+        //
+        // mark: 1
+        // limit: 8
+        // buffer Size: 4
+        //
+        // Before filling:
+        // -----------------
+        // buffer: GHIJ
+        // mark:    ^
+        // pos:        ^
+        // count:      ^
+        // available: 123
+        //
+        // After filling:
+        // -----------------
+        // buffer: HIJ123
+        // mark:   ^
+        // pos:       ^
+        // count:        ^
+        // available:
+        $in = new StringInputStream('123');
+        $instance = new BufferedInputStream($in, 4);
+        $markLimit->setValue($instance, 8);
+        $mark->setValue($instance, 1);
+        $buffer->setValue($instance, 'GHIJ');
+        $position->setValue($instance, 4);
+        $count->setValue($instance, 4);
+        $fillBuffer->invoke($instance);
+        $this->assertEquals('HIJ123', $buffer->getValue($instance));
+        $this->assertEquals(0, $mark->getValue($instance));
+        $this->assertEquals(3, $position->getValue($instance));
+        $this->assertEquals(6, $count->getValue($instance));
+
+
+        // In this case, the number of bytes in the buffer is greater than the
+        // 'buffer size' and the subordinate stream is empty.
+        //
+        // The scenario is as follows:
+        //
+        // mark: 1
+        // limit: 8
+        // buffer Size: 4
+        //
+        //
+        // Before filling:
+        // -----------------
+        // buffer: GHIJK
+        // mark:    ^
+        // pos:         ^
+        // count:       ^
+        // available:
+        //
+        // After filling:
+        // -----------------
+        // buffer: HIJK
+        // mark:   ^
+        // pos:        ^
+        // count:      ^
+        // available:
+        $in = new StringInputStream('');
+        $instance = new BufferedInputStream($in, 4);
+        $markLimit->setValue($instance, 8);
+        $mark->setValue($instance, 1);
+        $buffer->setValue($instance, 'GHIJK');
+        $position->setValue($instance, 5);
+        $count->setValue($instance, 5);
+        $fillBuffer->invoke($instance);
+        $this->assertEquals('HIJK', $buffer->getValue($instance));
+        $this->assertEquals(0, $mark->getValue($instance));
+        $this->assertEquals(4, $position->getValue($instance));
+        $this->assertEquals(4, $count->getValue($instance));
+
+        // In this case, the number of bytes in the buffer and the subordinate
+        // stream are both greater than the 'buffer size'.
+        //
+        // The scenario is as follows:
+        //
+        // mark: 0
+        // limit: 8
+        // buffer Size: 4
+        //
+        // Before filling:
+        // -----------------
+        // buffer: GHIJK
+        // mark:   ^
+        // pos:         ^
+        // count:       ^
+        // available: 123456789ABCDEF
+        //
+        // After filling:
+        // -----------------
+        // buffer: GHIJK1234
+        // mark:   ^
+        // pos:         ^
+        // count:           ^
+        // available: 56789ABCDEF
+        $in = new StringInputStream('123456789ABCDEF');
+        $instance = new BufferedInputStream($in, 4);
+        $markLimit->setValue($instance, 8);
+        $mark->setValue($instance, 0);
+        $buffer->setValue($instance, 'GHIJK');
+        $position->setValue($instance, 5);
+        $count->setValue($instance, 5);
+        $fillBuffer->invoke($instance);
+        $this->assertEquals('GHIJK1234', $buffer->getValue($instance));
+        $this->assertEquals(0, $mark->getValue($instance));
+        $this->assertEquals(5, $position->getValue($instance));
+        $this->assertEquals(9, $count->getValue($instance));
+
+
+        // In this case, the number of bytes in the buffer is equal to the
+        // buffer size and which of the subordinate stream is greater than the
+        // buffer size.
+        //
+        // The scenario is as follows:
+        //
+        // mark: 5
+        // limit: 3
+        // buffer Size: 6
+        //
+        // Before filling:
+        // -----------------
+        // buffer: GHIJKL
+        // mark:        ^
+        // pos:          ^
+        // count:        ^
+        // available: 123456789ABCDEF
+        //
+        // After filling:
+        // -----------------
+        // buffer: L123456
+        // mark:   ^
+        // pos:     ^
+        // count:         ^
+        // available: 789ABCDEF
+        //
+        // NOTE: in this case, after the buffer is filled, there are more than
+        // mark limit bytes after the mark in current buffer and the mark is
+        // still valid. So the position can be grown to surpass the mark limit
+        // without reading more bytes from the underlying stream, therefore the
+        // mark can remain valid even the mark limit has actually been exceeded.
+        $in = new StringInputStream('123456789ABCDEF');
+        $instance = new BufferedInputStream($in, 6);
+        $markLimit->setValue($instance, 3);
+        $mark->setValue($instance, 5);
+        $buffer->setValue($instance, 'GHIJKL');
+        $position->setValue($instance, 6);
+        $count->setValue($instance, 6);
+        $fillBuffer->invoke($instance);
+        $this->assertEquals('L123456', $buffer->getValue($instance));
+        $this->assertEquals(0, $mark->getValue($instance));
+        $this->assertEquals(1, $position->getValue($instance));
+        $this->assertEquals(7, $count->getValue($instance));
+
+
+        // Mark exists (mark > 0), but has become invalid: pos - mark >= limit,
+        // the method reads up to 'buffer size' bytes from the subordinate
+        // stream and overwrites current buffer with those bytes. So the
+        // number of bytes in the buffer can not surpass the value of
+        // 'buffer size' after filling.
+        // -------------------------------------------------------------------
+
+        // In this case, the number of bytes in the buffer and the subordinate
+        // stream are both greater than the 'buffer size' and the number of
+        // bytes read after mark is greater than the limit (pos - mark > limit).
+        //
+        // The scenario is as follows:
+        //
+        // mark: 1
+        // limit: 3
+        // buffer Size: 6
+        //
+        // Before filling:
+        // -----------------
+        // buffer: GHIJK
+        // mark:    ^
+        // pos:         ^
+        // count:       ^
+        // available: 123456789ABCDEF
+        //
+        // After filling:
+        // -----------------
+        // buffer: 123456
+        // mark:  ^
+        // pos:    ^
+        // count:        ^
+        // available: 789ABCDEF
+        $in = new StringInputStream('123456789ABCDEF');
+        $instance = new BufferedInputStream($in, 6);
+        $markLimit->setValue($instance, 3);
+        $mark->setValue($instance, 1);
+        $buffer->setValue($instance, 'GHIJK');
+        $position->setValue($instance, 5);
+        $count->setValue($instance, 5);
+        $fillBuffer->invoke($instance);
+        $this->assertEquals('123456', $buffer->getValue($instance));
+        $this->assertEquals(-1, $mark->getValue($instance));
+        $this->assertEquals(0, $position->getValue($instance));
+        $this->assertEquals(6, $count->getValue($instance));
+
+
+        // In this case, the number of bytes in the buffer is greater than
+        // 'buffer size' and which of the subordinate stream is less than the
+        // 'buffer size'. The number of bytes read after mark equals to the
+        // limit (pos - mark === limit).
+        //
+        //
+        // The scenario is as follows:
+        //
+        // mark: 1
+        // limit: 3
+        // buffer Size: 6
+        //
+        // Before filling:
+        // -----------------
+        // buffer: GHIJK
+        // mark:    ^
+        // pos:         ^
+        // count:       ^
+        // available: 123
+        //
+        // After filling:
+        // -----------------
+        // buffer: 123
+        // mark:  ^
+        // pos:    ^
+        // count:     ^
+        // available:
+        $in = new StringInputStream('123');
+        $instance = new BufferedInputStream($in, 6);
+        $markLimit->setValue($instance, 3);
+        $mark->setValue($instance, 1);
+        $buffer->setValue($instance, 'GHIJK');
+        $position->setValue($instance, 5);
+        $count->setValue($instance, 5);
+        $fillBuffer->invoke($instance);
+        $this->assertEquals('123', $buffer->getValue($instance));
+        $this->assertEquals(-1, $mark->getValue($instance));
+        $this->assertEquals(0, $position->getValue($instance));
+        $this->assertEquals(3, $count->getValue($instance));
+    }
+
+    public function testRead()
+    {
+        $in = new StringInputStream('123456789ABCDEF');
+        $instance = new BufferedInputStream($in, 4);
+        $this->assertEquals('1', $instance->read());
+        $this->assertEquals('23456', $instance->read(5));
+        $this->assertEquals('789ABCDEF', $instance->read(11));
+        $this->assertEquals('', $instance->read(1));
+    }
+
+    public function testMarkAndReset()
+    {
+        $in = new StringInputStream('123456789ABCDEF');
+        $instance = new BufferedInputStream($in, 4);
+
+        // 1234
+        //^ (mark)
+        //   ^ (pos)
+        //     ^ (count)
+        $this->assertEquals('12', $instance->read(2));
+
+        // 1234
+        //   ^ (mark)
+        //   ^ (pos)
+        //     ^ (count)
+        $instance->mark(4);
+
+        // 345678
+        // ^ (mark)
+        //    ^ (pos)
+        //       ^ (count)
+        $this->assertEquals('345', $instance->read(3));
+
+        // 345678
+        // ^ (mark)
+        // ^ (pos)
+        //       ^ (count)
+        $instance->reset();
+
+        // 345678
+        // ^ (mark)
+        //    ^ (pos)
+        //       ^ (count)
+        $this->assertEquals('345', $instance->read(3));
+
+        //  9ABC
+        // ^ (mark)
+        //  ^ (pos)
+        //      ^ (count)
+        $this->assertEquals('678', $instance->read(3));
+    }
+
+    public function testValidInvalidMark()
+    {
+        $in = new StringInputStream('GHIJKL123456789ABCDEF');
+        $instance = new BufferedInputStream($in, 6);
+
+        //  GHIJKL
+        // ^ (mark)
+        //       ^ (pos)
+        //        ^ (count)
+        $this->assertEquals('GHIJK', $instance->read(5));
+
+        //  GHIJKL
+        //       ^ (mark)
+        //       ^ (pos)
+        //        ^ (count)
+        $instance->mark(3);
+
+        //  L12345
+        //  ^ (mark)
+        //      ^ (pos)
+        //        ^ (count)
+        //
+        // NOTE: Now more than mark limit bytes have been read after mark, so
+        // technically the mark should be invalidated. But it won't because
+        // there are still some bytes available in current buffer, so there is
+        // no need to refill current buffer, therefore, the mark remains valid
+        // under this circumstance.
+        $this->assertEquals('L1234', $instance->read(5));
+
+        //  L12345
+        //  ^ (mark)
+        //  ^ (pos)
+        //        ^ (count)
+        //
+        $instance->reset();
+
+        //  L12345
+        //  ^ (mark)
+        //       ^ (pos)
+        //        ^ (count)
+        //
+        $this->assertEquals('L1234', $instance->read(5));
+    }
+
+    /**
+     * @dataProvider getDataForTestInvalidMark
+     * @expectedException ZerusTech\Component\IO\Exception\IOException
+     * @expectedExceptionMessage Invalid mark.
+     */
+    public function testInvalidMark($instance)
+    {
+        $instance->reset();
+    }
+
+    public function getDataForTestInvalidMark()
+    {
+        $data = [];
+
+        $in = new StringInputStream('123456789ABCDEF');
+        $instance = new BufferedInputStream($in, 4);
+        $data[][] = $instance;
+
+        $in = new StringInputStream('123456789ABCDEF');
+        $instance = new BufferedInputStream($in, 4);
+        $instance->read(2);
+        $instance->mark(4);
+        $instance->read(5);
+
+        $in = new StringInputStream('123456789ABCDEF');
+        $instance = new BufferedInputStream($in, 4);
+        $instance->read(2);
+        $instance->mark(4);
+        $instance->read(6);
+        $data[][] = $instance;
+
+        return $data;
+    }
+
+    /**
+     * @expectedException ZerusTech\Component\IO\Exception\IOException
+     * @expectedExceptionMessage Stream closed.
+     */
+    public function testResetOnClosedStream()
+    {
+        $in = new StringInputStream('123456789ABCDEF');
+        $instance = new BufferedInputStream($in, 4);
+        $instance->read(2);
+        $instance->mark(4);
+        $instance->close();
+        $instance->reset();
+    }
+
+    public function testSkipAndAvailable()
+    {
+        $in = new StringInputStream('0123456789ABCDEF');
+        $instance = new BufferedInputStream($in, 4);
+
+        $this->assertEquals(16, $instance->available());
+
+        $this->assertEquals(6, $instance->skip(6));
+        $this->assertEquals(10, $instance->available());
+
+        $this->assertEquals(10, $instance->skip(11));
+        $this->assertEquals(0, $instance->available());
+    }
+
+    public function testMiscMethods()
+    {
+        $in = new StringInputStream('0123456789ABCDEF');
+        $instance = new BufferedInputStream($in, 4);
+
+        $this->assertTrue($instance->markSupported());
+
+        $instance->skip(2);
+        $instance->mark(4);
+
+        $ref = new \ReflectionClass('ZerusTech\Component\IO\Stream\Input\BufferedInputStream');
+
+        $mark = $ref->getProperty('mark');
+        $mark->setAccessible(true);
+
+        $this->assertFalse($instance->isClosed());
+        $this->assertEquals(2, $mark->getValue($instance));
+
+        $instance->close();
+        $this->assertTrue($instance->isClosed());
+        $this->assertEquals(-1, $mark->getValue($instance));
+    }
+}
