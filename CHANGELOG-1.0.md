@@ -7,6 +7,9 @@ This changelog references the relavant changes (bug and security fixes) done in
 To get the new features in this major release, check the list at the bottom of
 this file.
 
+* 1.0.5
+    * Add dev-master alias back
+
 * 1.0.4
     * Removed composer.lock
     * Removed dev-master alias from composer.json

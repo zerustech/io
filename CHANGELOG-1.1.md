@@ -7,6 +7,9 @@ This changelog references the relavant changes (bug and security fixes) done in
 To get the new features in this major release, check the list at the bottom of
 this file.
 
+* 1.1.4 (2016-08-11)
+    * Restore dev-master alias
+
 * 1.1.3 (2016-08-10)
     * Moved source files to ``./src``.
 
