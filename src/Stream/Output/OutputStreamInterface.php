@@ -22,9 +22,9 @@ interface OutputStreamInterface
     /**
      * Writes the given string into the underline resource.
      *
-     * @param string The string to be written to the resource.
+     * @param string $data The string to be written to the resource.
      * @return AbstractOutputStream Current instance.
      * @throws IOException If an I/O error occurs.
      */
-    public function write($string);
+    public function write($data);
 }
