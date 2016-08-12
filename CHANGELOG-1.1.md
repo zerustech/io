@@ -12,6 +12,7 @@ this file.
     * Changed signature of OutputStreamInterface::write()
     * Updated comments for FilterInputStream
     * Deprecated FilterInputStream::getResource()
+    * Fixed incorrect paramter in phpunit mock constructor. 
 
 * 1.1.4 (2016-08-11)
     * Restore dev-master alias

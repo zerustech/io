@@ -23,7 +23,7 @@ class FilterInputStreamTest extends \PHPUnit_Framework_TestCase
 {
     public function testConstructor()
     {
-        $input = $this->getMockForAbstractClass('ZerusTech\Component\IO\Stream\Input\AbstractInputStream', [null]);
+        $input = $this->getMockForAbstractClass('ZerusTech\Component\IO\Stream\Input\AbstractInputStream', []);
         $instance = new FilterInputStream($input);
         $reflection = new \ReflectionClass('ZerusTech\Component\IO\Stream\Input\FilterInputStream');
         $in = $reflection->getProperty('in');
