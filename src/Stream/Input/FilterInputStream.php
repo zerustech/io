@@ -26,7 +26,7 @@ class FilterInputStream extends AbstractInputStream
      * @var InputStreamInterface This is the subordinate input stream to which
      * method calls are redirected.
      */
-    private $in;
+    protected $in;
 
     /**
      * Create a filter input stream instance with the specified subordinate
