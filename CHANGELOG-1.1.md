@@ -10,6 +10,8 @@ this file.
 * 1.1.5
     * Changed accessibility of FilterInputStream::in to protected 
     * Changed signature of OutputStreamInterface::write()
+    * Updated comments for FilterInputStream
+    * Deprecated FilterInputStream::getResource()
 
 * 1.1.4 (2016-08-11)
     * Restore dev-master alias
