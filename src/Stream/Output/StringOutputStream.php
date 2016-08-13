@@ -44,7 +44,7 @@ class StringOutputStream extends AbstractOutputStream
     /**
      * This method discards all of the bytes that have been written to the
      * internal buffer so far by setting the ``$buffer`` variable to empty.
-     * @return StringOutputStream Current stream. 
+     * @return StringOutputStream Current stream.
      */
     public function reset()
     {

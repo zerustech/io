@@ -14,12 +14,12 @@ namespace ZerusTech\Component\IO\Stream\Output;
 use ZerusTech\Component\IO\Exception\IOException;
 
 /**
- * This class converts binary data to ascii hexadecimal prior to writing the 
+ * This class converts binary data to ascii hexadecimal prior to writing the
  * data to the subordinate output stream.
  *
- * In binary format, each byte represents a binary byte. In ascii hexadecimal 
+ * In binary format, each byte represents a binary byte. In ascii hexadecimal
  * format, each binary byte is presented by a pair of hexadecimal characters
- * (0-9, a-f, or A-F). White-space characters are ignored. 
+ * (0-9, a-f, or A-F). White-space characters are ignored.
  *
  * For example:
  *
@@ -34,7 +34,7 @@ use ZerusTech\Component\IO\Exception\IOException;
 class BinaryToAsciiHexadecimalOutputStream extends FilterOutputStream
 {
     /**
-     * This method converts ``$data`` from binary format to ascii hexadecimal 
+     * This method converts ``$data`` from binary format to ascii hexadecimal
      * format and writes the converted data to its subordinate output stream.
      */
     public function write($data)

@@ -15,11 +15,11 @@ use ZerusTech\Component\IO\Exception\IOException;
 use ZerusTech\Componnet\IO\Stream\Output\BinaryToAsciiHexadecimalOutputStream;
 
 /**
- * This class converts the data read from the subordinate input stream from 
+ * This class converts the data read from the subordinate input stream from
  * ascii hexadecimal format to binary format.
  *
  * @author Michael Lee <michael.lee@zerustech.com>
- * @see BinaryToAsciiHexadecimalOutputStream 
+ * @see BinaryToAsciiHexadecimalOutputStream
  */
 class AsciiHexadecimalToBinaryInputStream extends FilterInputStream
 {
@@ -35,16 +35,16 @@ class AsciiHexadecimalToBinaryInputStream extends FilterInputStream
     private $spaces = ["\x20", "\x09", "\x0D", "\x0A"];
 
     /**
-     * @var array The internal buffer that stores a pair of hexadecimal 
+     * @var array The internal buffer that stores a pair of hexadecimal
      * characters that are read from the subordinate input stream most recently.
      */
     private $buffer = [];
-    
+
     /**
      * {@inheritdoc}
      *
-     * This method reads up to ``$length`` bytes from the subordinate input 
-     * stream and converts the data from ascii hexadecimal format to binary 
+     * This method reads up to ``$length`` bytes from the subordinate input
+     * stream and converts the data from ascii hexadecimal format to binary
      * format.
      */
     public function read($length = 1)
@@ -65,9 +65,9 @@ class AsciiHexadecimalToBinaryInputStream extends FilterInputStream
             $bin .= $this->hex2bin();
         }
 
-        // If the end of stream has been reached, the process ends here, 
-        // otherwise tries to read further bytes from the subordinate stream, 
-        // till a hexadecimal pair is found or the end of stream has been 
+        // If the end of stream has been reached, the process ends here,
+        // otherwise tries to read further bytes from the subordinate stream,
+        // till a hexadecimal pair is found or the end of stream has been
         // reached.
         if ( strlen($hex) > 0 && '' === $bin) {
 
@@ -78,7 +78,7 @@ class AsciiHexadecimalToBinaryInputStream extends FilterInputStream
     }
 
     /**
-     * This method shifts two hexadecimal characters from the internal buffer, 
+     * This method shifts two hexadecimal characters from the internal buffer,
      * and converts them into one binary byte.
      *
      * @return string The binary byte converted from the hexadecimal data.
@@ -104,5 +104,5 @@ class AsciiHexadecimalToBinaryInputStream extends FilterInputStream
     private function isSpace($byte)
     {
         return in_array($byte, $this->spaces);
-    } 
+    }
 }
