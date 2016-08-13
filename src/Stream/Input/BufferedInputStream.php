@@ -144,6 +144,8 @@ class BufferedInputStream extends FilterInputStream
         $this->markLimit = $markLimit;
 
         $this->mark = $this->position;
+
+        return $this;
     }
 
     /**
@@ -165,6 +167,8 @@ class BufferedInputStream extends FilterInputStream
         }
 
         $this->position = $this->mark;
+
+        return $this;
     }
 
     /**
@@ -180,15 +184,17 @@ class BufferedInputStream extends FilterInputStream
      */
     public function close()
     {
+        parent::close();
+
         $this->mark = -1;
 
-        parent::close();
+        return $this;
     }
 
     /**
      * Called to refill the buffer (when count is equal to position).
      *
-     * @return bool When at least one additional byte was read into buffer,
+     * @return bool True when at least one additional byte was read into buffer,
      * false otherwise (at EOF).
      */
     private function fillBuffer()

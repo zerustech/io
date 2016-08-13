@@ -53,7 +53,7 @@ abstract class AbstractInputStream implements InputStreamInterface, ClosableInte
      */
     public function mark($readLimit)
     {
-        // Do nothing
+        return $this;
     }
 
     /**
@@ -97,6 +97,8 @@ abstract class AbstractInputStream implements InputStreamInterface, ClosableInte
         }
 
         $this->closed = true;
+
+        return $this;
     }
 
     /**
