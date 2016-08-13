@@ -48,6 +48,8 @@ abstract class AbstractOutputStream implements OutputStreamInterface, ClosableIn
         }
 
         $this->closed = true;
+
+        return $this;
     }
 
     /**
@@ -63,6 +65,6 @@ abstract class AbstractOutputStream implements OutputStreamInterface, ClosableIn
      */
     public function flush()
     {
-        // Do nothing
+        return $this;
     }
 }

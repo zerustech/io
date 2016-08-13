@@ -7,6 +7,11 @@ This changelog references the relavant changes (bug and security fixes) done in
 To get the new features in this major release, check the list at the bottom of
 this file.
 
+* 1.1.7 (2016-08-13)
+    * Added method chaining for AbstractInputStream
+    * Added method chaining for BufferedInputStream
+    * Added method chianing for AbstractOutputStream
+
 * 1.1.6 (2016-08-13)
     * Implemented flush() method in AbstractOutputStream
 
