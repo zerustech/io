@@ -7,6 +7,9 @@ This changelog references the relavant changes (bug and security fixes) done in
 To get the new features in this major release, check the list at the bottom of
 this file.
 
+* 1.2.3 (2016-08-13)
+    * Added code samples.
+
 * 1.2.2 (2016-08-13)
     * Removed dependency on zerustech/threaded to avoid circular dependency
 
