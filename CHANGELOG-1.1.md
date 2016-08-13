@@ -7,7 +7,7 @@ This changelog references the relavant changes (bug and security fixes) done in
 To get the new features in this major release, check the list at the bottom of
 this file.
 
-* 1.1.5
+* 1.1.5 (2016-08-13)
     * Changed accessibility of FilterInputStream::in to protected 
     * Changed signature of OutputStreamInterface::write()
     * Updated comments for FilterInputStream
