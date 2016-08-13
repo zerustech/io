@@ -57,4 +57,12 @@ abstract class AbstractOutputStream implements OutputStreamInterface, ClosableIn
     {
         return $this->closed;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function flush()
+    {
+        // Do nothing
+    }
 }
