@@ -136,6 +136,30 @@ printf("%s\n", $string); // "5678"
 
 ```
 
+### AsciiHexadecimalToBinaryInputStream ###
+
+This class reads bytes from a subordinate stream and converts the bytes read
+from ``Ascii Hexadecimal`` format into ``Binary`` format.
+
+In ``Ascii Hexadecimal`` format, spaces (``" ", "\t", "\n", "\r"``) are ignored.
+
+```php
+<?php
+
+require_once __DIR__.'/vendor/autoload.php';
+
+use ZerusTech\Component\IO\Stream\Input\StringInputStream;
+use ZerusTech\Component\IO\Stream\Input\AsciiHexadecimalToBinaryInputStream;
+
+$src = new StringInputStream("68656C6C 6F");
+
+$input = new AsciiHexadecimalToBinaryInputStream($src);
+
+$string = $input->read(1024); // returns 'hello'
+
+printf("%s\n", $string);
+
+```
 
 ### FileOutputStream ###
 
@@ -151,6 +175,50 @@ use ZerusTech\Component\IO\Stream\Output\FileOutputStream;
 $out = new FileOutputStream('foo.txt', 'wb');
 
 $out->write('hello, world!');
+
+```
+
+### StringOutputStream ###
+
+This class writes bytes to a string. This is useful for connecting a string with other
+streams.
+
+```php
+<?php
+
+require_once __DIR__.'/vendor/autoload.php';
+
+use ZerusTech\Component\IO\Stream\Output\StringOutputStream;
+
+$out = new StringOutputStream();
+
+$out->write('hello');
+
+printf("%s\n", $out->__toString()); // "hello"
+
+```
+
+### BinaryToAsciiHexadecimalOutputStream ###
+
+This class converts bytes that are written to it from ``Binary`` format to
+``Ascii Hexadecimal format`` and writes the converted bytes to a subordinate
+stream.
+
+```php
+<?php
+
+require_once __DIR__.'/vendor/autoload.php';
+
+use ZerusTech\Component\IO\Stream\Output\StringOutputStream;
+use ZerusTech\Component\IO\Stream\Output\BinaryToAsciiHexadecimalOutputStream;
+
+$target = new StringOutputStream();
+
+$out = new BinaryToAsciiHexadecimalOutputStream($target);
+
+$out->write("hello");
+
+printf("%s\n", $target->__toString()); // "68656C6C6F"
 
 ```
 
