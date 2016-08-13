@@ -222,6 +222,37 @@ printf("%s\n", $target->__toString()); // "68656C6C6F"
 
 ```
 
+### PipedInputStream and PipedOutputStream ###
+
+The ``PipedInputStream`` and ``PipedOutputStream`` can be connected to create a 
+communication pipe. The ``PipedOutputStream`` writes data to the
+``PipedInputStream``. 
+
+The implementation in this component is not thread-safe, so it does not support
+wait and notify features. For piped stream classes in multi-threaded
+environment, check [zerustech/threaded][3] for details.
+
+```php
+<?php
+
+require_once __DIR__.'/vendor/autoload.php';
+
+use ZerusTech\Component\IO\Stream\Input\PipedInputStream;
+use ZerusTech\Component\IO\Stream\Output\PipedOutputStream;
+
+$output = new PipedOutputStream();
+
+$input = new PipedInputStream($output);
+
+$output->write('hello');
+
+$data = $input->read(5); // returns 'hello'
+
+printf("%s\n", $data);
+
+```
+
+
 References
 ----------
 * [The zerustech/io project][2]
