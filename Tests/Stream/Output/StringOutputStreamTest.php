@@ -13,8 +13,6 @@ namespace ZerusTech\Component\IO\Tests\Stream\Output;
 
 use ZerusTech\Component\IO\Stream\Output\StringOutputStream;
 use ZerusTech\Component\IO\Stream\Output\FileOutputStream;
-use ZerusTech\Component\Threaded\Stream\Input\PipedInputStream;
-use ZerusTech\Component\Threaded\Stream\Output\PipedOutputStream;
 use ZerusTech\Component\IO\Exception;
 
 /**
@@ -62,15 +60,17 @@ class StringOutputStreamTest extends \PHPUnit_Framework_TestCase
 
         $stream->write('hello');
 
-        $buffer = new \Threaded();
-
-        $in = new PipedInputStream($buffer);
-
-        $out = new PipedOutputStream($in);
+        $out = new FileOutputStream('php://memory', 'rw+');
 
         $stream->writeTo($out);
 
-        $this->assertEquals('hello', $in->read(5));
+        $ref = new \ReflectionClass('ZerusTech\Component\IO\Stream\Output\FileOutputStream');
+        $resource = $ref->getProperty('resource');
+        $resource->setAccessible(true);
+        $fp = $resource->getValue($out);
+        rewind($fp);
+
+        $this->assertEquals('hello', fread($fp, 5));
     }
 
     public function testMiscMethods()
