@@ -84,5 +84,5 @@ class StringOutputStreamTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('hello', $stream->__toString());
 
         $this->assertEquals(0, $stream->reset()->size());
-    } 
+    }
 }
