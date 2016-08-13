@@ -13,6 +13,9 @@
     "require": {
         "php": ">=5.4"
     },
+    "require-dev": {
+        "zerustech/threaded": "^1.1.2"
+    },
     "autoload": {
         "psr-4": {
             "ZerusTech\\Component\\IO\\": "./src",
