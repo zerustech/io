@@ -7,6 +7,10 @@ This changelog references the relavant changes (bug and security fixes) done in
 To get the new features in this major release, check the list at the bottom of
 this file.
 
+* 1.2.5 ()
+    * Changed AsciiHexadecimalToBinaryInputStream::isSpace to a public static
+      method.
+
 * 1.2.4 (2016-08-13)
     * Merged 1.1
     * Fixed CS issue
