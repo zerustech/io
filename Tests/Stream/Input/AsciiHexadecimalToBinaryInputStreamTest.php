@@ -22,6 +22,25 @@ use ZerusTech\Component\IO\Exception;
  */
 class AsciiHexadecimalToBinaryInputStreamTest extends \PHPUnit_Framework_TestCase
 {
+
+    /**
+     * @dataProvider getDataForTestIsSpace
+     */
+    public function testIsSpace($byte)
+    {
+        $this->assertTrue(AsciiHexadecimalToBinaryInputStream::isSpace($byte));
+    }
+
+    public function getDataForTestIsSpace()
+    {
+        return [
+            [" "],
+            ["\t"],
+            ["\n"],
+            ["\r"],
+        ];
+    }
+
     /**
      * @dataProvider getDataForTestRead
      */
