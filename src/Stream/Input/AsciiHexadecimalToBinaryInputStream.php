@@ -32,7 +32,7 @@ class AsciiHexadecimalToBinaryInputStream extends FilterInputStream
      *
      * @var array List of space characters that should be ignored.
      */
-    private $spaces = ["\x20", "\x09", "\x0D", "\x0A"];
+    private static $spaces = ["\x20", "\x09", "\x0D", "\x0A"];
 
     /**
      * @var array The internal buffer that stores a pair of hexadecimal
@@ -55,7 +55,7 @@ class AsciiHexadecimalToBinaryInputStream extends FilterInputStream
 
         for ($i = 0; $i < strlen($hex); $i++) {
 
-            if (true === $this->isSpace($hex[$i])) {
+            if (true === static::isSpace($hex[$i])) {
 
                 continue;
             }
@@ -101,8 +101,8 @@ class AsciiHexadecimalToBinaryInputStream extends FilterInputStream
      *
      * @param string $byte The byte data to be tested.
      */
-    private function isSpace($byte)
+    public static function isSpace($byte)
     {
-        return in_array($byte, $this->spaces);
+        return in_array($byte, static::$spaces);
     }
 }
