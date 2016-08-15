@@ -11,6 +11,7 @@ this file.
     * Changed AsciiHexadecimalToBinaryInputStream::isSpace to a public static
       method.
     * Added hasNonHex() method to AsciiHexadecimalToBinaryInputStream
+    * Renamed hasNonHex() to hasNonHexadecimalCharacter()
 
 * 1.2.4 (2016-08-13)
     * Merged 1.1

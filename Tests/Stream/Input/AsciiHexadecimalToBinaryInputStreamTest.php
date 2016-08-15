@@ -81,7 +81,7 @@ class AsciiHexadecimalToBinaryInputStreamTest extends \PHPUnit_Framework_TestCas
      */
     public function testHasNonHex($bytes, $expected)
     {
-        $this->assertEquals($expected, AsciiHexadecimalToBinaryInputStream::hasNonHex($bytes));
+        $this->assertEquals($expected, AsciiHexadecimalToBinaryInputStream::hasNonHexadecimalCharacter($bytes));
     }
 
     public function getDataForTestHasNonHex()
