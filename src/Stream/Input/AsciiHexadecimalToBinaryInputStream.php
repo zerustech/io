@@ -126,7 +126,7 @@ class AsciiHexadecimalToBinaryInputStream extends FilterInputStream
      * @return bool True if a non-hexadecimal character is found, false
      * otherwise.
      */
-    public static function hasNonHex($bytes)
+    public static function hasNonHexadecimalCharacter($bytes)
     {
         return (1 === preg_match(static::$nonHex, $bytes));
     }
