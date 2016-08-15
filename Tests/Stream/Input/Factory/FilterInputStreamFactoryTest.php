@@ -27,7 +27,9 @@ class FilterInputStreamFactoryTest extends \PHPUnit_Framework_TestCase
     {
         $in = new StringInputStream("hello");
 
-        $stream = FilterInputStreamFactory::create($in);
+        $factory = new FilterInputStreamFactory();
+
+        $stream = $factory->create($in);
 
         $this->assertInstanceOf('ZerusTech\Component\IO\Stream\Input\FilterInputStream', $stream);
     }
