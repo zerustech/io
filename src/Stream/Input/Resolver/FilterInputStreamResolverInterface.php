@@ -9,26 +9,26 @@
  * was distributed with this source code.
  */
 
-namespace ZerusTech\Component\IO\Stream\Input\Factory\Resolver;
+namespace ZerusTech\Component\IO\Stream\Input\Resolver;
 
 use ZerusTech\Component\IO\Stream\Input\InputStreamInterface;
+use ZerusTech\Component\IO\Stream\Input\FilterInputStream;
 use ZerusTech\Component\IO\Stream\Input\Factory\FilterInputStreamFactoryInterface;
 
 /**
  * This interface detects the data format of the input stream and resolves it
- * to a filter input stream factory that creates suitable filter input stream
- * objects.
+ * to a filter input stream that is suitable for parsing the data format.
  *
  * @author Michael Lee <michael.lee@zerustech.com>
  */
-interface FilterInputStreamFactoryResolverInterface
+interface FilterInputStreamResolverInterface
 {
     /**
-     * Resolves the input stream to a filter input stream factory.
+     * Resolves the input stream to a filter input stream.
      *
      * @param InputStreamInterface $input the input stream.
-     * @return FilterInputStreamFactoryInterface|null The filter stream factory,
-     * or null if the data format is not supported.
+     * @return FilterInputStream|null The filter stream, or null if the data
+     * format is not supported.
      */
     public function resolve(InputStreamInterface $input);
 

@@ -9,7 +9,7 @@
  * was distributed with this source code.
  */
 
-namespace ZerusTech\Component\IO\Stream\Input\Factory\Resolver;
+namespace ZerusTech\Component\IO\Stream\Input\Resolver;
 
 use ZerusTech\Component\IO\Stream\Input\InputStreamInterface;
 use ZerusTech\Component\IO\Stream\Input\BufferedInputStream;
@@ -17,12 +17,13 @@ use ZerusTech\Component\IO\Stream\Input\Factory\FilterInputStreamFactoryInterfac
 
 /**
  * This class holds a list of filter input stream factory instances.
- * When it receives an input stream, it resolves it to the first factory that
- * claims to support the data format.
+ * When it receives an input stream, it finds the first factory that
+ * claims to support the data format and asks the factory to create a filter
+ * input stream.
  *
  * @author Michael Lee <michael.lee@zerustech.com>
  */
-class FilterInputStreamFactoryResolver implements FilterInputStreamFactoryResolverInterface
+class FilterInputStreamResolver implements FilterInputStreamResolverInterface
 {
     /**
      * @var FilterInputStreamFactoryInterface[] The internal list of factories.
@@ -30,8 +31,8 @@ class FilterInputStreamFactoryResolver implements FilterInputStreamFactoryResolv
     private $factories;
 
     /**
-     * This method creates a new filter input stream factory resolver and
-     * initializes its internal list of factories with the given argument.
+     * This method creates a new filter input stream resolver and initializes
+     * its internal list of factories with the given argument.
      *
      * @param FilterInputStreamFactoryInterface[] The list of factories.
      */
@@ -45,7 +46,9 @@ class FilterInputStreamFactoryResolver implements FilterInputStreamFactoryResolv
      */
     public function resolve(InputStreamInterface $input)
     {
-        $resolved = null;
+        $resolvedStream = null;
+
+        $resolvedFactory = null;
 
         if (false === $input->markSupported()) {
 
@@ -56,13 +59,18 @@ class FilterInputStreamFactoryResolver implements FilterInputStreamFactoryResolv
 
             if (true === $factory->support($input)) {
 
-                $resolved = $factory;
+                $resolvedFactory = $factory;
 
                 break;
             }
         }
 
-        return $resolved;
+        if (null !== $resolvedFactory) {
+
+            $resolvedStream = $resolvedFactory->create($input);
+        }
+
+        return $resolvedStream;
     }
 
     /**
