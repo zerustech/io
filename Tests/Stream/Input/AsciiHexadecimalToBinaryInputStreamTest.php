@@ -75,4 +75,24 @@ class AsciiHexadecimalToBinaryInputStreamTest extends \PHPUnit_Framework_TestCas
             ["\n\t\r 68 \n\t\r65\r \n\t6C\t\r \n6C\n\t\r 6F \n\t\r", 100, 'hello'],
         ];
     }
+
+    /**
+     * @dataProvider getDataForTestHasNonHex
+     */
+    public function testHasNonHex($bytes, $expected)
+    {
+        $this->assertEquals($expected, AsciiHexadecimalToBinaryInputStream::hasNonHex($bytes));
+    }
+
+    public function getDataForTestHasNonHex()
+    {
+        return [
+            ["0123456789abcdefABCDEF", false],
+            ["0123456789abcdefABCDEF ", true],
+            ["GHIJK", true],
+            ["X0123456789abcdefABCDEF", true],
+            ["0123456789XabcdefABCDEF", true],
+            ["0123456789abcdefABCDEFX", true],
+        ];
+    }
 }
