@@ -36,9 +36,11 @@ class FilterInputStreamFactoryTest extends \PHPUnit_Framework_TestCase
 
     public function testSupport()
     {
+        $factory = new FilterInputStreamFactory();
+
         $in = new BufferedInputStream(new StringInputStream("hello"));
 
-        $this->assertTrue(FilterInputStreamFactory::support($in));
+        $this->assertTrue($factory->support($in));
     }
 
     /**
@@ -47,8 +49,10 @@ class FilterInputStreamFactoryTest extends \PHPUnit_Framework_TestCase
      */
     public function testSupportWithException()
     {
+        $factory = new FilterInputStreamFactory();
+
         $in = new StringInputStream('hello');
 
-        FilterInputStreamFactory::support($in);
+        $factory->support($in);
     }
 }
