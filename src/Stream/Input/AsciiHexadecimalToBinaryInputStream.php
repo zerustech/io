@@ -24,15 +24,25 @@ use ZerusTech\Componnet\IO\Stream\Output\BinaryToAsciiHexadecimalOutputStream;
 class AsciiHexadecimalToBinaryInputStream extends FilterInputStream
 {
     /**
-     * The following space characters should be ignored:
+     * Regex pattern for matching a single space character.
+     *
+     * The following characters are treated as a space character:
      * - Blank " ": \x20
      * - Tab "\t": \x09
      * - Carrage Return "\n": \x0D
      * - Line Feed "\r": \x0A
      *
-     * @var array List of space characters that should be ignored.
+     * @var string Regex pattern for matching a space character.
      */
-    private static $spaces = ["\x20", "\x09", "\x0D", "\x0A"];
+    private static $spaces = "/^[ \t\r\n]$/";
+
+    /**
+     * Regex pattern for matching at least one non-hexadecimal character.
+     *
+     * @var string Regex pattern for matching at least one non-hexadecimal
+     * character.
+     */
+    private static $nonHex = "/[^0-9a-fA-F]/";
 
     /**
      * @var array The internal buffer that stores a pair of hexadecimal
@@ -96,13 +106,28 @@ class AsciiHexadecimalToBinaryInputStream extends FilterInputStream
     }
 
     /**
-     * This method returns a boolean that indicates  whether the given byte
+     * This method returns a boolean that indicates whether the given byte
      * represents a space character.
      *
      * @param string $byte The byte data to be tested.
+     * @return bool True if the given byte is a space character, or false
+     * otherwise.
      */
     public static function isSpace($byte)
     {
-        return in_array($byte, static::$spaces);
+        return (1 === preg_match(static::$spaces, $byte));
+    }
+
+    /**
+     * This method returns a boolean that indicates whether there is at least
+     * one non-hexadecimal character ([^0-9a-fA-F]) in the given string.
+     *
+     * @param string $bytes The string to be tested.
+     * @return bool True if a non-hexadecimal character is found, false
+     * otherwise.
+     */
+    public static function hasNonHex($bytes)
+    {
+        return (1 === preg_match(static::$nonHex, $bytes));
     }
 }
