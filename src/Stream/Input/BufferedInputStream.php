@@ -87,6 +87,8 @@ class BufferedInputStream extends FilterInputStream
         $this->mark = -1;
 
         $this->markLimit = 0;
+
+        $this->offset = $in->offset();
     }
 
     /**
@@ -109,6 +111,8 @@ class BufferedInputStream extends FilterInputStream
                 $bytes .= substr($this->buffer, $this->position, $bytesRead);
 
                 $this->position += $bytesRead;
+
+                $this->offset += $bytesRead;
 
                 $remaining -= $bytesRead;
             }
@@ -166,17 +170,11 @@ class BufferedInputStream extends FilterInputStream
             throw new IOException(sprintf("%s", $this->isClosed() ? "Stream closed." : "Invalid mark."));
         }
 
+        $this->offset -= ($this->position - $this->mark);
+
         $this->position = $this->mark;
 
         return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function skip($byteCount)
-    {
-        return strlen($this->read($byteCount));
     }
 
     /**
@@ -230,5 +228,23 @@ class BufferedInputStream extends FilterInputStream
         $this->count += strlen($bytes);
 
         return strlen($bytes) > 0;
+    }
+
+    /**
+     * This class supports mark and resets, so it manipulates its own offset.
+     */
+    public function offset()
+    {
+        return $this->offset;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function skip($byteCount)
+    {
+        $offset = $this->offset;
+        $this->read($byteCount);
+        return $this->offset - $offset;
     }
 }

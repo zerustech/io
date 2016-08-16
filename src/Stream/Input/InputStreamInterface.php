@@ -90,4 +90,11 @@ interface InputStreamInterface
      * @throws IOException If an error occurs.
      */
     public function skip($byteCount);
+
+    /**
+     * This method returns the global offset, in bytes, in the underlying
+     * resource / stream.
+     * @return int The global offset.
+     */
+    public function offset();
 }
