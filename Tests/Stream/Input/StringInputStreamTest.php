@@ -28,13 +28,13 @@ class StringInputStreamTest extends \PHPUnit_Framework_TestCase
         $this->buffer = $this->ref->getProperty('buffer');
         $this->buffer->setAccessible(true);
 
-        $this->position = $this->ref->getProperty('position');
-        $this->position->setAccessible(true);
+        $this->offset = $this->ref->getProperty('offset');
+        $this->offset->setAccessible(true);
     }
 
     public function tearDown()
     {
-        $this->position = null;
+        $this->offset = null;
         $this->buffer = null;
         $this->ref = null;
     }
@@ -43,7 +43,7 @@ class StringInputStreamTest extends \PHPUnit_Framework_TestCase
     {
         $stream = new Input\StringInputStream('hello');
         $this->assertEquals('hello', $this->buffer->getValue($stream));
-        $this->assertEquals(0, $this->position->getValue($stream));
+        $this->assertEquals(0, $this->offset->getValue($stream));
         $this->assertFalse($stream->isClosed());
     }
 
@@ -71,7 +71,7 @@ class StringInputStreamTest extends \PHPUnit_Framework_TestCase
         $stream = new Input\StringInputStream('hello');
         $this->assertSame($stream, $stream->close());
         $this->assertTrue($stream->isClosed());
-        $this->assertEquals(0, $this->position->getValue($stream));
+        $this->assertEquals(0, $this->offset->getValue($stream));
         $this->assertNull($this->buffer->getValue($stream));
     }
 
@@ -84,6 +84,15 @@ class StringInputStreamTest extends \PHPUnit_Framework_TestCase
         $stream = new Input\StringInputStream('hello');
         $stream->close();
         $stream->close();
+    }
+
+    public function testSkip()
+    {
+        $stream = new Input\StringInputStream('hello, world!');
+
+        $this->assertEquals(5, $stream->skip(5));
+
+        $this->assertEquals(8, $stream->skip(9));
     }
 
     public function testAvailable()

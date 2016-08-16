@@ -96,9 +96,6 @@ class FilterInputStream extends AbstractInputStream
 
     /**
      * {@inheritdoc}
-     *
-     * Redirects request to the subordinate input stream by calling
-     * ``$this->in->skip()``
      */
     public function skip($byteCount)
     {
@@ -139,5 +136,16 @@ class FilterInputStream extends AbstractInputStream
     public function close()
     {
         return $this->in->close();
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * Redirects request to the subordinate input stream by calling
+     * ``$this->in->offset()``
+     */
+    public function offset()
+    {
+        return $this->in->offset();
     }
 }
