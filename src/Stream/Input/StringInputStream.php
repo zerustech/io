@@ -27,11 +27,6 @@ class StringInputStream extends AbstractInputStream
     private $buffer;
 
     /**
-     * @var int The index of the next byte that will be read from the buffer.
-     */
-    private $position;
-
-    /**
      * Constructor.
      *
      * @param string $buffer The underlying input buffer.
@@ -41,8 +36,6 @@ class StringInputStream extends AbstractInputStream
         parent::__construct();
 
         $this->buffer = $buffer;
-
-        $this->position = 0;
     }
 
     /**
@@ -54,13 +47,13 @@ class StringInputStream extends AbstractInputStream
 
         if (false === $this->closed && $length > 0) {
 
-            $bytes = min($length, strlen($this->buffer) - $this->position);
+            $bytes = min($length, strlen($this->buffer) - $this->offset);
 
             if ($bytes > 0) {
 
-                $data = substr($this->buffer, $this->position, $bytes);
+                $data = substr($this->buffer, $this->offset, $bytes);
 
-                $this->position += $bytes;
+                $this->offset += $bytes;
             }
         }
 
@@ -79,7 +72,7 @@ class StringInputStream extends AbstractInputStream
 
         $this->closed = true;
 
-        $this->position = 0;
+        $this->offset = 0;
 
         $this->buffer = null;
 
@@ -91,6 +84,6 @@ class StringInputStream extends AbstractInputStream
      */
     public function available()
     {
-        return strlen($this->buffer) - $this->position;
+        return strlen($this->buffer) - $this->offset;
     }
 }
