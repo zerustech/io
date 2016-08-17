@@ -106,20 +106,6 @@ class FilterInputStream extends AbstractInputStream
     }
 
     /**
-     * Redirects request to the subordinate input stream by calling
-     * ``$this->in->getResource()``
-     *
-     * @deprecated This method is deprecated as of 1.1.5 and will be removed in
-     * 2.0. There is no alternative for it.
-     */
-    public function getResource()
-    {
-        @trigger_error(sprintf('%s is deprecated as of 1.1.5 and will be removed in 2.0. There is no alternative for it.', __METHOD__), E_USER_DEPRECATED);
-
-        return $this->in->getResource();
-    }
-
-    /**
      * {@inheritdoc}
      *
      * Redirects request to the subordinate input stream by calling

@@ -34,7 +34,7 @@ class FilterInputStreamTest extends \PHPUnit_Framework_TestCase
     public function testProxyMethods()
     {
         $input = $this->getMockBuilder('ZerusTech\Component\IO\Stream\Input\AbstractInputStream')
-                      ->setMethods(['read', 'available', 'mark', 'markSupported', 'reset', 'skip', 'close', 'getResource', 'isClosed'])
+                      ->setMethods(['read', 'available', 'mark', 'markSupported', 'reset', 'skip', 'close', 'isClosed'])
                       ->getMock();
 
         $instance = new FilterInputStream($input);
@@ -45,7 +45,6 @@ class FilterInputStreamTest extends \PHPUnit_Framework_TestCase
         $input->method('markSupported')->willReturn(false);
         $input->method('reset')->willReturn(null);
         $input->method('skip')->with(100)->willReturn(50);
-        $input->method('getResource')->willReturn(null);
         $input->method('isClosed')->willReturn(false);
         $input->method('close')->willReturn(null);
 
@@ -55,7 +54,6 @@ class FilterInputStreamTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($instance->markSupported());
         $this->assertNull($instance->reset());
         $this->assertEquals(50, $instance->skip(100));
-        $this->assertNull($instance->getResource());
         $this->assertFalse($instance->isClosed());
         $this->assertNull($instance->close());
     }
