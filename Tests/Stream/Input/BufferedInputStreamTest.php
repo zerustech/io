@@ -690,4 +690,27 @@ class BufferedInputStreamTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($instance->isClosed());
         $this->assertEquals(-1, $mark->getValue($instance));
     }
+
+    public function testOffset()
+    {
+        $src = new StringInputStream('0123456789ABCDEF');
+        $src->skip(4);
+        $in = new BufferedInputStream($src);
+
+        $this->assertEquals(4, $in->offset());
+
+        $bytes = $in->read(5);
+        $this->assertEquals('45678', $bytes);
+        $this->assertEquals(9, $in->offset());
+
+        $in->mark(3);
+        $in->skip(2);
+        $this->assertEquals(11, $in->offset());
+
+        $in->reset();
+        $this->assertEquals(9, $in->offset());
+
+        $in->skip(4);
+        $this->assertEquals(13, $in->offset());
+    }
 }
