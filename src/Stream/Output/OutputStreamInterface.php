@@ -25,6 +25,8 @@ interface OutputStreamInterface
      * @param string $data The string to be written to the resource.
      * @return AbstractOutputStream Current instance.
      * @throws IOException If an I/O error occurs.
+     * @deprecated This method is deprecated as of 1.1.8 and will be redefined
+     * in 2.0.
      */
     public function write($data);
 }
