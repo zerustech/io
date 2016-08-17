@@ -68,7 +68,7 @@ class FileInputStreamTest extends \PHPUnit_Framework_TestCase
         }
 
         $ref = new \ReflectionClass('ZerusTech\Component\IO\Stream\Input\FileInputStream');
-        $property = $ref->getProperty('offset');
+        $property = $ref->getProperty('position');
         $property->setAccessible(true);
         $this->assertEquals(0, $property->getValue($stream));
     }
@@ -86,8 +86,6 @@ class FileInputStreamTest extends \PHPUnit_Framework_TestCase
         $stream = new Input\FileInputStream($this->base.'input_01.txt', 'rb');
 
         $this->assertEquals('hello', $stream->read(5));
-
-        $this->assertEquals(", world!\n", $stream->read(10));
     }
 
     /**
@@ -116,7 +114,7 @@ class FileInputStreamTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($this->resourceProperty->getValue($stream));
 
         $ref = new \ReflectionClass('ZerusTech\Component\IO\Stream\Input\FileInputStream');
-        $property = $ref->getProperty('offset');
+        $property = $ref->getProperty('position');
         $property->setAccessible(true);
         $this->assertEquals(0, $property->getValue($stream));
     }
@@ -147,15 +145,6 @@ class FileInputStreamTest extends \PHPUnit_Framework_TestCase
         fclose($resource);
 
         $stream->close();
-    }
-
-    public function testSkip()
-    {
-        $stream = new Input\FileInputStream($this->base.'input_01.txt', 'rb');
-
-        $this->assertEquals(5, $stream->skip(5));
-
-        $this->assertEquals(9, $stream->skip(10));
     }
 
     public function testAvaialble()
