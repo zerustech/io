@@ -28,18 +28,11 @@ abstract class AbstractInputStream implements InputStreamInterface, ClosableInte
     protected $closed;
 
     /**
-     * @var int The global offset.
-     */
-    protected $offset;
-
-    /**
      * Create a new input stream instance.
      */
     public function __construct()
     {
         $this->closed = false;
-
-        $this->offset = 0;
     }
 
     /**
@@ -90,9 +83,7 @@ abstract class AbstractInputStream implements InputStreamInterface, ClosableInte
      */
     public function skip($byteCount)
     {
-        $offset = $this->offset;
-        $this->read($byteCount);
-        return $this->offset - $offset;
+        return strlen($this->read($byteCount));
     }
 
     /**
@@ -118,13 +109,5 @@ abstract class AbstractInputStream implements InputStreamInterface, ClosableInte
     public function isClosed()
     {
         return $this->closed;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function offset()
-    {
-        return $this->offset;
     }
 }

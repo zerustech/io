@@ -37,11 +37,10 @@ class AbstractInputStreamTest extends \PHPUnit_Framework_TestCase
             ->with(100)
             ->willReturn('hello');
 
-       // $this->assertEquals(5, $stub->skip(100));
+       $this->assertEquals(5, $stub->skip(100));
        $this->assertFalse($stub->isClosed());
        $stub->close();
        $this->assertTrue($stub->isClosed());
-       $this->assertEquals(0, $stub->offset());
        $stub->reset();
     }
 
