@@ -27,7 +27,7 @@ interface InputStreamInterface
      * @param int $length The maximum bytes to read.
      * @return string The string consists of the bytes read.
      * @throws IOException If an I/O error occurs.
-     * @deprecated This method is deprecated as of 1.0.6 and will be redefined
+     * @deprecated This method is deprecated as of 1.1.8 and will be redefined
      * in 2.0.
      */
     public function read($length = 1);
