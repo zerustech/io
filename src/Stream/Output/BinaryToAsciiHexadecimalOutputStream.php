@@ -34,19 +34,21 @@ use ZerusTech\Component\IO\Exception\IOException;
 class BinaryToAsciiHexadecimalOutputStream extends FilterOutputStream
 {
     /**
-     * This method converts ``$data`` from binary format to ascii hexadecimal
+     * {@inheritdoc}
+     *
+     * This method converts ``$bytes`` from binary format to ascii hexadecimal
      * format and writes the converted data to its subordinate output stream.
      */
-    public function write($data)
+    protected function writeBytes($bytes)
     {
         $hex = '';
 
-        for ($i = 0; $i < strlen($data); $i++) {
+        for ($i = 0; $i < strlen($bytes); $i++) {
 
-            $hex .= strtoupper((bin2hex($data[$i])));
+            $hex .= strtoupper((bin2hex($bytes[$i])));
         }
 
-        parent::write($hex);
+        parent::writeBytes($hex);
 
         return $this;
     }

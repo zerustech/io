@@ -79,7 +79,7 @@ class PipedOutputStream extends AbstractOutputStream implements PipedOutputStrea
     /**
      * {@inheritdoc}
      */
-    public function write($string)
+    protected function writeBytes($bytes)
     {
         if (true === $this->closed) {
 
@@ -91,9 +91,9 @@ class PipedOutputStream extends AbstractOutputStream implements PipedOutputStrea
             throw new IOException(sprintf("Current stream is not connected to any downstream."));
         }
 
-        if (null !== $string) {
+        if (null !== $bytes) {
 
-            $this->downstream->receive($string);
+            $this->downstream->receive($bytes);
         }
 
         return $this;

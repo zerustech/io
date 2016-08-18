@@ -67,4 +67,27 @@ abstract class AbstractOutputStream implements OutputStreamInterface, ClosableIn
     {
         return $this;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function write($bytes, $offset = 0, $length = null)
+    {
+        $length = (null === $length ? strlen($bytes) : $length);
+
+        if ($offset < 0 || $length < 0 || strlen($bytes) < $offset + $length) {
+
+            throw new \OutOfBoundsException(sprintf("Invalid offset or length."));
+        }
+
+        return $this->writeBytes(substr($bytes, $offset, $length));
+    }
+
+    /**
+     * This method writes all bytes in ``$bytes`` to the stream.
+     *
+     * @param string $bytes The bytes to write to the stream.
+     * @throws IOException If an I/O error occurs.
+     */
+    abstract protected function writeBytes($bytes);
 }

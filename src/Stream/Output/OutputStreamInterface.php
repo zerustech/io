@@ -20,13 +20,18 @@ use ZerusTech\Component\IO\Exception\IOException;
 interface OutputStreamInterface
 {
     /**
-     * Writes the given string into the underline resource.
+     * This method writes ``$length`` bytes from the specified string ``$bytes``
+     * starting at index ``$offset`` into the stream.
      *
-     * @param string $data The string to be written to the resource.
-     * @return AbstractOutputStream Current instance.
+     * @param string $bytes The string of bytes to write from.
+     * @param int $offset The index in the string to start writing from, 0 by
+     * default.
+     * @param int|null $length The number of bytes to write, or null to write
+     * all remaining bytes from index ``$offset`` to the end of the string.
+     * @return OutputStreamInterface Current instance.
      * @throws IOException If an I/O error occurs.
-     * @deprecated This method is deprecated as of 1.1.8 and will be redefined
-     * in 2.0.
+     * @throws \OutOfBoundsException If ``$offset`` or ``$length`` is out of
+     * bounds.
      */
-    public function write($data);
+    public function write($bytes, $offset = 0, $length = null);
 }

@@ -65,14 +65,14 @@ class StringOutputStream extends AbstractOutputStream
     /**
      * {@inheritdoc}
      */
-    public function write($data)
+    protected function writeBytes($bytes)
     {
         if (true === $this->closed) {
 
             throw new IOException(sprintf("Stream is already closed, can't be written."));
         }
 
-        $this->buffer .= $data;
+        $this->buffer .= $bytes;
 
         return $this;
     }
@@ -98,12 +98,5 @@ class StringOutputStream extends AbstractOutputStream
     public function __toString()
     {
         return $this->buffer;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function flush()
-    {
     }
 }

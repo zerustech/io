@@ -70,13 +70,10 @@ class FilterOutputStream extends AbstractOutputStream
 
     /**
      * {@inheritdoc}
-     *
-     * Redirects request to the subordinate output stream by calling
-     * ``$this->out->write()``
      */
-    public function write($data)
+    protected function writeBytes($bytes)
     {
-        $this->out->write($data);
+        $this->out->writeBytes($bytes);
 
         return $this;
     }

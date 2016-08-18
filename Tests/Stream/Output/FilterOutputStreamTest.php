@@ -34,10 +34,11 @@ class FilterOutputStreamTest extends \PHPUnit_Framework_TestCase
     public function testProxyMethods()
     {
         $output = $this->getMockBuilder('ZerusTech\Component\IO\Stream\Output\AbstractOutputStream')
-            ->setMethods(['flush', 'write', 'close', 'isClosed'])
+            ->setMethods(['flush', 'close', 'isClosed', 'write', 'writeBytes'])
             ->getMock();
 
-        $output->expects($this->once())->method('write')->with('abc');
+        $output->expects($this->never())->method('write');
+        $output->expects($this->once())->method('writeBytes')->with('abc');
         $output->expects($this->exactly(2))->method('flush');
         $output->expects($this->once())->method('close');
 
