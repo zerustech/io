@@ -79,10 +79,7 @@ class FileOutputStream extends AbstractOutputStream
      */
     public function close()
     {
-        if (true === $this->closed) {
-
-            throw new IOException(sprintf("File %s is already closed, can't be closed again.", $this->source));
-        }
+        parent::close();
 
         $this->flush();
 
@@ -90,8 +87,6 @@ class FileOutputStream extends AbstractOutputStream
 
             throw new IOException(sprintf("Failed to close %s.", $this->source));
         }
-
-        $this->closed = true;
 
         $this->resource = null;
 

@@ -48,8 +48,6 @@ class BinaryToAsciiHexadecimalOutputStream extends FilterOutputStream
             $hex .= strtoupper((bin2hex($bytes[$i])));
         }
 
-        parent::writeBytes($hex);
-
-        return $this;
+        return parent::writeBytes($hex);
     }
 }
