@@ -87,7 +87,7 @@ class FileOutputStreamTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @expectedException ZerusTech\Component\IO\Exception\IOException
-     * @expectedExceptionMessageRegExp /File [^ ]+ is already closed, can't be written./
+     * @expectedExceptionMessage Stream is already closed, can't be written.
      */
     public function testWriteOnClosedStream()
     {

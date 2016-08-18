@@ -80,6 +80,11 @@ abstract class AbstractOutputStream implements OutputStreamInterface, ClosableIn
             throw new \OutOfBoundsException(sprintf("Invalid offset or length."));
         }
 
+        if (true === $this->closed) {
+
+            throw new IOException(sprintf("Stream is already closed, can't be written."));
+        }
+
         return $this->writeBytes(substr($bytes, $offset, $length));
     }
 

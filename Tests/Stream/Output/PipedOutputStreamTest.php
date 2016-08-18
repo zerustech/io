@@ -148,7 +148,7 @@ class PipedOutputStreamTest extends \PHPUnit_Framework_TestCase
      * Tries to close a piped output stream that is already closed.
      *
      * @expectedException ZerusTech\Component\IO\Exception\IOException
-     * @expectedExceptionMessage Already closed.
+     * @expectedExceptionMessage Stream is already closed, can't be closed again
      */
     public function testCloseOnClosedStream()
     {
@@ -180,7 +180,7 @@ class PipedOutputStreamTest extends \PHPUnit_Framework_TestCase
      * Writes data to a closed piped output stream.
      *
      * @expectedException ZerusTech\Component\IO\Exception\IOException
-     * @expectedExceptionMessage Can't write to a closed stream.
+     * @expectedExceptionMessage Stream is already closed, can't be written.
      */
     public function testWriteOnClosedStream()
     {

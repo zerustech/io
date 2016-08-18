@@ -81,11 +81,6 @@ class PipedOutputStream extends AbstractOutputStream implements PipedOutputStrea
      */
     protected function writeBytes($bytes)
     {
-        if (true === $this->closed) {
-
-            throw new IOException(sprintf("Can't write to a closed stream."));
-        }
-
         if (null === $this->downstream) {
 
             throw new IOException(sprintf("Current stream is not connected to any downstream."));
@@ -95,21 +90,6 @@ class PipedOutputStream extends AbstractOutputStream implements PipedOutputStrea
 
             $this->downstream->receive($bytes);
         }
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function close()
-    {
-        if (true === $this->closed) {
-
-            throw new IOException(sprintf("Already closed."));
-        }
-
-        $this->closed = true;
 
         return $this;
     }

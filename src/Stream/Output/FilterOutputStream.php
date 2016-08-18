@@ -71,6 +71,14 @@ class FilterOutputStream extends AbstractOutputStream
     /**
      * {@inheritdoc}
      */
+    public function isClosed()
+    {
+        return $this->out->isClosed();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function writeBytes($bytes)
     {
         $this->out->writeBytes($bytes);

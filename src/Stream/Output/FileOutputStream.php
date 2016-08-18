@@ -121,12 +121,6 @@ class FileOutputStream extends AbstractOutputStream
      */
     protected function writeBytes($bytes)
     {
-
-        if (true === $this->closed) {
-
-            throw new IOException(sprintf("File %s is already closed, can't be written.", $this->source));
-        }
-
         if (false === @fwrite($this->resource, $bytes)) {
 
             throw new IOException(sprintf("An unknown error occured when writing to file %s.", $this->source));

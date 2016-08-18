@@ -67,11 +67,6 @@ class StringOutputStream extends AbstractOutputStream
      */
     protected function writeBytes($bytes)
     {
-        if (true === $this->closed) {
-
-            throw new IOException(sprintf("Stream is already closed, can't be written."));
-        }
-
         $this->buffer .= $bytes;
 
         return $this;
