@@ -37,9 +37,9 @@ use ZerusTech\Component\IO\Stream\Input\FileInputStream;
 
 $input = new FileInputStream('foo.txt', 'rb');
 
-$string = $input->read(10); // reads upto 10 bytes from foo.txt
+$count = $input->read($string, 10); // reads upto 10 bytes from foo.txt
 
-printf("%s\n", $string);
+printf("%d bytes read: %s\n", $count, $string);
 
 ```
 
@@ -57,9 +57,9 @@ use ZerusTech\Component\IO\Stream\Input\StringInputStream;
 
 $input = new StringInputStream("hello, world!");
 
-$string = $input->read(5); // returns 'hello'
+$count = $input->read($string, 5); // returns 'hello'
 
-printf("%s\n", $string);
+printf("%d bytes read: %s\n", $count, $string);
 
 ```
 
@@ -102,9 +102,9 @@ $buffer->mark(6);
 //    ^ (mark)
 //         ^ (pos)
 //          ^ (count)
-$string = $buffer->read(5);
+$count = $buffer->read($string, 5);
 
-printf("%s\n", $string); // "23456"
+printf("%d bytes read: %s\n", $count, $string); // "23456"
 
 //  buffer:
 //  -------
@@ -120,9 +120,9 @@ $buffer->reset();
 //    ^ (mark)
 //       ^ (pos)
 //          ^ (count)
-$string = $buffer->read(3);
+$count = $buffer->read($string, 3);
 
-printf("%s\n", $string); // "234"
+printf("%d bytes read: %s\n", $count, $string); // "234"
 
 //  buffer:
 //  -------
@@ -130,9 +130,9 @@ printf("%s\n", $string); // "234"
 // ^ (mark)
 //   ^ (pos)
 //      ^ (count)
-$string = $buffer->read(4);
+$count = $buffer->read($string, 4);
 
-printf("%s\n", $string); // "5678"
+printf("%d bytes read: %s\n", $count, $string); // "5678"
 
 ```
 
@@ -155,9 +155,9 @@ $src = new StringInputStream("68656C6C 6F");
 
 $input = new AsciiHexadecimalToBinaryInputStream($src);
 
-$string = $input->read(1024); // returns 'hello'
+$count = $input->read($string, 1024); // returns 'hello'
 
-printf("%s\n", $string);
+printf("%d bytes read: %s\n", $count, $string);
 
 ```
 
@@ -174,7 +174,9 @@ use ZerusTech\Component\IO\Stream\Output\FileOutputStream;
 
 $out = new FileOutputStream('foo.txt', 'wb');
 
-$out->write('hello, world!');
+$count = $out->write('hello, world!');
+
+printf("%d bytes written.\n", $count);
 
 ```
 
@@ -192,9 +194,9 @@ use ZerusTech\Component\IO\Stream\Output\StringOutputStream;
 
 $out = new StringOutputStream();
 
-$out->write('hello');
+$count = $out->write('hello');
 
-printf("%s\n", $out->__toString()); // "hello"
+printf("%d bytes written: %s\n", $count, $out->__toString()); // "hello"
 
 ```
 
@@ -216,9 +218,9 @@ $target = new StringOutputStream();
 
 $out = new BinaryToAsciiHexadecimalOutputStream($target);
 
-$out->write("hello");
+$count = $out->write("hello");
 
-printf("%s\n", $target->__toString()); // "68656C6C6F"
+printf("%d bytes written: %s\n", $count, $target->__toString()); // "68656C6C6F"
 
 ```
 
@@ -246,12 +248,81 @@ $input = new PipedInputStream($output);
 
 $output->write('hello');
 
-$data = $input->read(5); // returns 'hello'
+$count = $input->read($data, 5); // returns 'hello'
 
-printf("%s\n", $data);
+printf("%d bytes read: %s\n", $count, $data);
 
 ```
 
+### FilterInputStreamFactoryInterface and FilterInputStreamFactory
+
+Factory classes that implement the ``FilterInputStreamFactoryInterface``
+interface, creates specific filter input stream instances.
+
+The factory classes should also implement the ``support()`` method to test if
+the filter input stream supports the data format of the subordinate input
+stream.
+
+It's typically used by a filter input stream factory resolver to resolve a
+suitable factory.
+
+The ``FilterInputStreamFactory`` is the default implementation of the factory
+interface, which supports any buffered input stream.
+
+```php
+<?php
+
+require_once __DIR__.'/vendor/autoload.php';
+
+use ZerusTech\Component\IO\Stream\Input\Factory\FilterInputStreamFactory;
+use ZerusTech\Component\IO\Stream\Input\StringInputStream;
+use ZerusTech\Component\IO\Stream\Input\BufferedInputStream;
+
+// In order to detect the data format, the factory need fetch some leading bytes
+// from the subordinate stream, so it must support mark and reset.
+$in = new BufferedInputStream(new StringInputStream('hello'));
+
+$factory = new FilterInputStreamFactory();
+
+if ($factory->support($in)) {
+
+    $filter = $factory->create($in);
+
+    $count = $filter->read($string, 5);
+
+    printf("%d bytes read: %s\n", $count, $string);
+}
+
+```
+
+### FilterInputStreamResolverInterface and FilterInputStreamResolver ###
+
+This interface detects the data format of the input stream and resolves it to a
+filter input stream that is suitable for parsing the data format.
+
+```php
+<?php
+
+require_once __DIR__.'/vendor/autoload.php';
+
+use ZerusTech\Component\IO\Stream\Input\Factory\FilterInputStreamFactory;
+use ZerusTech\Component\IO\Stream\Input\Resolver\FilterInputStreamResolver;
+use ZerusTech\Component\IO\Stream\Input\StringInputStream;
+use ZerusTech\Component\IO\Stream\Input\BufferedInputStream;
+
+$in = new BufferedInputStream(new StringInputStream('hello'));
+$factory = new FilterInputStreamFactory();
+$resolver = new FilterInputStreamResolver();
+$resolver->addFactory($factory);
+
+if (null !==($filter = $resolver->resolve($in))) {
+
+    $count = $filter->read($string, 5);
+
+    printf("%d bytes read: %s\n", $count, $string);
+}
+
+```
 
 References
 ----------
