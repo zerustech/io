@@ -21,31 +21,41 @@ use ZerusTech\Component\IO\Exception;
  */
 class FilterOutputStreamTest extends \PHPUnit_Framework_TestCase
 {
+    public function setup()
+    {
+        $this->ref = new \ReflectionClass('ZerusTech\Component\IO\Stream\Output\FilterOutputStream');
+
+        $this->out = $this->ref->getProperty('out');
+        $this->out->setAccessible(true);
+
+        $this->output = $this->ref->getMethod('output');
+        $this->output->setAccessible(true);
+    }
+
     public function testConstructor()
     {
-        $output = $this->getMockForAbstractClass('ZerusTech\Component\IO\Stream\Output\AbstractOutputStream', []);
+        $output = $this->getMockForAbstractClass('ZerusTech\Component\IO\Stream\Output\AbstractOutputStream');
         $instance = new FilterOutputStream($output);
-        $reflection = new \ReflectionClass('ZerusTech\Component\IO\Stream\Output\FilterOutputStream');
-        $out = $reflection->getProperty('out');
-        $out->setAccessible(true);
-        $this->assertSame($output, $out->getValue($instance));
+        $this->assertSame($output, $this->out->getValue($instance));
     }
 
     public function testProxyMethods()
     {
         $output = $this->getMockBuilder('ZerusTech\Component\IO\Stream\Output\AbstractOutputStream')
-            ->setMethods(['flush', 'close', 'isClosed', 'write', 'writeBytes'])
+            ->setMethods(['flush', 'close', 'isClosed', 'write', 'writeSubstring', 'output'])
             ->getMock();
 
-        $output->expects($this->never())->method('write');
-        $output->expects($this->once())->method('writeBytes')->with('abc');
-        $output->expects($this->exactly(2))->method('flush');
-        $output->expects($this->once())->method('close');
+        $output->expects($this->once())->method('output')->with('hello')->willReturn(5);
+        $output->expects($this->exactly(2))->method('flush')->will($this->returnSelf());
+        $output->expects($this->once())->method('close')->will($this->returnSelf());
+        $output->expects($this->exactly(2))->method('isClosed')->will($this->onConsecutiveCalls(false, true));
 
         $instance = new FilterOutputStream($output);
 
-        $this->assertSame($instance, $instance->write('abc'));
+        $this->output->invoke($instance, 'hello');
+        $this->assertFalse($instance->isClosed());
         $this->assertSame($instance, $instance->flush());
         $this->assertSame($instance, $instance->close());
+        $this->assertTrue($instance->isClosed());
     }
 }

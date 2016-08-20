@@ -40,9 +40,9 @@ class PipedOutputStream extends AbstractOutputStream implements PipedOutputStrea
      */
     public function __construct(PipedInputStreamInterface $downstream = null)
     {
-        $this->downstream = $downstream;
+        parent::__construct();
 
-        $this->closed = false;
+        $this->downstream = $downstream;
 
         if (null !== $this->downstream) {
 
@@ -79,18 +79,13 @@ class PipedOutputStream extends AbstractOutputStream implements PipedOutputStrea
     /**
      * {@inheritdoc}
      */
-    protected function writeBytes($bytes)
+    protected function output($bytes)
     {
         if (null === $this->downstream) {
 
             throw new IOException(sprintf("Current stream is not connected to any downstream."));
         }
 
-        if (null !== $bytes) {
-
-            $this->downstream->receive($bytes);
-        }
-
-        return $this;
+        return $this->downstream->receive($bytes);
     }
 }

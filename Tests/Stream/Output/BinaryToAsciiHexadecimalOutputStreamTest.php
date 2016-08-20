@@ -22,13 +22,25 @@ use ZerusTech\Component\IO\Exception;
  */
 class BinaryToHexadecimalOutputStreamTest extends \PHPUnit_Framework_TestCase
 {
-    public function testWrite()
+    public function setup()
+    {
+        $this->ref = new \ReflectionClass('ZerusTech\Component\IO\Stream\Output\BinaryToAsciiHexadecimalOutputStream');
+
+        $this->output = $this->ref->getMethod('output');
+        $this->output->setAccessible(true);
+    }
+
+    public function tearDown()
+    {
+    }
+
+    public function testOutput()
     {
         $out = new StringOutputStream();
 
         $stream = new BinaryToAsciiHexadecimalOutputStream($out);
 
-        $stream->write('hello');
+        $this->assertEquals(10, $this->output->invoke($stream, 'hello'));
 
         $this->assertEquals('68656C6C6F', $out->__toString());
     }

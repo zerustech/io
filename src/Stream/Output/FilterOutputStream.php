@@ -79,10 +79,8 @@ class FilterOutputStream extends AbstractOutputStream
     /**
      * {@inheritdoc}
      */
-    protected function writeBytes($bytes)
+    protected function output($bytes)
     {
-        $this->out->writeBytes($bytes);
-
-        return $this;
+        return $this->out->output($bytes);
     }
 }

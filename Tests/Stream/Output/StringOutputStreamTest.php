@@ -12,7 +12,8 @@
 namespace ZerusTech\Component\IO\Tests\Stream\Output;
 
 use ZerusTech\Component\IO\Stream\Output\StringOutputStream;
-use ZerusTech\Component\IO\Stream\Output\FileOutputStream;
+use ZerusTech\Component\IO\Stream\Output\PipedOutputStream;
+use ZerusTech\Component\IO\Stream\Input\PipedInputStream;
 use ZerusTech\Component\IO\Exception;
 
 /**
@@ -27,8 +28,10 @@ class StringOutputStreamTest extends \PHPUnit_Framework_TestCase
         $this->ref = new \ReflectionClass('ZerusTech\Component\IO\Stream\Output\StringOutputStream');
 
         $this->buffer = $this->ref->getProperty('buffer');
-
         $this->buffer->setAccessible(true);
+
+        $this->output = $this->ref->getMethod('output');
+        $this->output->setAccessible(true);
     }
 
     public function tearDown()
@@ -40,37 +43,31 @@ class StringOutputStreamTest extends \PHPUnit_Framework_TestCase
 
     public function testConstructor()
     {
-        $stream = new StringOutputStream();
-
-        $this->assertEquals('', $this->buffer->getValue($stream));
-    }
-
-    public function testWrite()
-    {
-        $stream = new StringOutputStream();
-
-        $stream->write('hello');
+        $stream = new StringOutputStream('hello');
 
         $this->assertEquals('hello', $this->buffer->getValue($stream));
+    }
+
+    public function testOutput()
+    {
+        $stream = new StringOutputStream('hello');
+
+        $this->assertEquals(8, $this->output->invoke($stream, ', world!'));
+
+        $this->assertEquals('hello, world!', $this->buffer->getValue($stream));
     }
 
     public function testWriteTo()
     {
         $stream = new StringOutputStream();
-
         $stream->write('hello');
 
-        $out = new FileOutputStream('php://memory', 'rw+');
-
+        $out = new PipedOutputStream();
+        $in = new PipedInputStream($out);
         $stream->writeTo($out);
 
-        $ref = new \ReflectionClass('ZerusTech\Component\IO\Stream\Output\FileOutputStream');
-        $resource = $ref->getProperty('resource');
-        $resource->setAccessible(true);
-        $fp = $resource->getValue($out);
-        rewind($fp);
-
-        $this->assertEquals('hello', fread($fp, 5));
+        $this->assertEquals(5, $in->read($buffer, 5));
+        $this->assertEquals('hello', $buffer);
     }
 
     public function testMiscMethods()

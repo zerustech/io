@@ -79,7 +79,10 @@ class FileOutputStream extends AbstractOutputStream
      */
     public function close()
     {
-        parent::close();
+        if (true === $this->closed) {
+
+            throw new IOException(sprintf("File %s is already closed, can't be closed again.", $this->source));
+        }
 
         $this->flush();
 
@@ -89,6 +92,8 @@ class FileOutputStream extends AbstractOutputStream
         }
 
         $this->resource = null;
+
+        $this->closed = true;
 
         return $this;
     }
@@ -114,13 +119,13 @@ class FileOutputStream extends AbstractOutputStream
     /**
      * {@inehritdoc}
      */
-    protected function writeBytes($bytes)
+    protected function output($bytes)
     {
         if (false === @fwrite($this->resource, $bytes)) {
 
             throw new IOException(sprintf("An unknown error occured when writing to file %s.", $this->source));
         }
 
-        return $this;
+        return strlen($bytes);
     }
 }

@@ -39,7 +39,7 @@ class BinaryToAsciiHexadecimalOutputStream extends FilterOutputStream
      * This method converts ``$bytes`` from binary format to ascii hexadecimal
      * format and writes the converted data to its subordinate output stream.
      */
-    protected function writeBytes($bytes)
+    protected function output($bytes)
     {
         $hex = '';
 
@@ -48,6 +48,6 @@ class BinaryToAsciiHexadecimalOutputStream extends FilterOutputStream
             $hex .= strtoupper((bin2hex($bytes[$i])));
         }
 
-        return parent::writeBytes($hex);
+        return parent::output($hex);
     }
 }

@@ -33,12 +33,14 @@ class StringOutputStream extends AbstractOutputStream
 
     /**
      * This method creates a new string output stream.
+     *
+     * @param string $buffer The initial content of the internal buffer.
      */
-    public function __construct()
+    public function __construct($buffer = '')
     {
-        $this->buffer = '';
-
         parent::__construct();
+
+        $this->buffer = $buffer;
     }
 
     /**
@@ -65,25 +67,23 @@ class StringOutputStream extends AbstractOutputStream
     /**
      * {@inheritdoc}
      */
-    protected function writeBytes($bytes)
+    protected function output($bytes)
     {
         $this->buffer .= $bytes;
 
-        return $this;
+        return strlen($bytes);
     }
 
     /**
      * This method writes all the bytes that have been written to this stream
      * from the internal buffer to the specified output stream.
      * @param OutputStreamInterface $out The output stream to write to.
-     * @return StringOutputStream Current stream.
+     * @return int The actual number of bytes written to the stream.
      * @throws IOException If error occurs.
      */
     public function writeTo(OutputStreamInterface $out)
     {
-        $out->write($this->buffer);
-
-        return $this;
+        return $out->write($this->buffer);
     }
 
     /**

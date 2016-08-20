@@ -26,8 +26,10 @@ class FileOutputStreamTest extends \PHPUnit_Framework_TestCase
         $this->ref = new \ReflectionClass('ZerusTech\Component\IO\Stream\Output\FileOutputStream');
 
         $this->resourceProperty = $this->ref->getProperty('resource');
-
         $this->resourceProperty->setAccessible(true);
+
+        $this->output = $this->ref->getMethod('output');
+        $this->output->setAccessible(true);
     }
 
     public function tearDown()
@@ -35,6 +37,8 @@ class FileOutputStreamTest extends \PHPUnit_Framework_TestCase
         $this->ref = null;
 
         $this->resource = null;
+
+        $this->output = null;
     }
 
     /**
@@ -70,13 +74,13 @@ class FileOutputStreamTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
-    public function testWrite()
+    public function testOutput()
     {
         $stream = new Output\FileOutputStream('php://memory', 'rb+');
 
-        $stream->write('hello');
-
         $resource = $this->resourceProperty->getValue($stream);
+
+        $this->assertEquals(5, $this->output->invoke($stream, 'hello'));
 
         rewind($resource);
 
@@ -87,25 +91,14 @@ class FileOutputStreamTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @expectedException ZerusTech\Component\IO\Exception\IOException
-     * @expectedExceptionMessage Stream is already closed, can't be written.
-     */
-    public function testWriteOnClosedStream()
-    {
-        $stream = new Output\FileOutputStream('php://memory', 'wb');
-        $stream->close();
-        $stream->write('hello');
-    }
-
-    /**
-     * @expectedException ZerusTech\Component\IO\Exception\IOException
      * @expectedExceptionMessageRegExp /An unknown error occured when writing to file [^ ]+./
      */
-    public function testWriteOnClosedFile()
+    public function testOutputOnClosedFile()
     {
         $stream = new Output\FileOutputStream('php://memory', 'wb');
         $resource = $this->resourceProperty->getValue($stream);
         fclose($resource);
-        $stream->write('hello');
+        $this->output->invoke($stream, 'hello');
     }
 
     public function testFlush()

@@ -29,6 +29,9 @@ class PipedOutputStreamTest extends \PHPUnit_Framework_TestCase
         $this->downstream = $this->ref->getProperty('downstream');
         $this->downstream->setAccessible(true);
 
+        $this->output = $this->ref->getMethod('output');
+        $this->output->setAccessible(true);
+
         $this->downstreamRef = new \ReflectionClass('ZerusTech\Component\IO\Stream\Input\PipedInputStream');
         $this->buffer = $this->downstreamRef->getProperty('buffer');
         $this->buffer->setAccessible(true);
@@ -138,29 +141,10 @@ class PipedOutputStreamTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($output->isClosed());
     }
 
-    public function testFlush()
-    {
-        $output = new PipedOutputStream();
-        $this->assertSame($output, $output->flush());
-    }
-
-    /**
-     * Tries to close a piped output stream that is already closed.
-     *
-     * @expectedException ZerusTech\Component\IO\Exception\IOException
-     * @expectedExceptionMessage Stream is already closed, can't be closed again
-     */
-    public function testCloseOnClosedStream()
-    {
-        $output = new PipedOutputStream();
-        $output->close();
-        $output->close();
-    }
-
     /**
      * Writes data to a piped output stream.
      */
-    public function testWrite()
+    public function testOutput()
     {
         // Initializes a piped input stream.
         $downstream = new PipedInputStream();
@@ -169,24 +153,11 @@ class PipedOutputStreamTest extends \PHPUnit_Framework_TestCase
         $output = new PipedOutputStream($downstream);
 
         // Writes '*' to the piped output stream.
-        $data = '*';
+        $data = 'hello';
 
-        $output->write($data);
+        $this->output->invoke($output, $data);
 
         $this->assertEquals($data, $this->buffer->getValue($downstream));
-    }
-
-    /**
-     * Writes data to a closed piped output stream.
-     *
-     * @expectedException ZerusTech\Component\IO\Exception\IOException
-     * @expectedExceptionMessage Stream is already closed, can't be written.
-     */
-    public function testWriteOnClosedStream()
-    {
-        $output = new PipedOutputStream();
-        $output->close();
-        $output->write('hello');
     }
 
     /**
@@ -199,6 +170,6 @@ class PipedOutputStreamTest extends \PHPUnit_Framework_TestCase
     public function testWriteWithNullDownstream()
     {
         $output = new PipedOutputStream();
-        $output->write('hello');
+        $this->output->invoke($output, 'hello');
     }
 }
