@@ -12,6 +12,7 @@
 namespace ZerusTech\Component\IO\Tests\Stream\Input;
 
 use ZerusTech\Component\IO\Stream\Input\FilterInputStream;
+use ZerusTech\Component\IO\Stream\Input\StringInputStream;
 use ZerusTech\Component\IO\Exception;
 
 /**
@@ -21,40 +22,68 @@ use ZerusTech\Component\IO\Exception;
  */
 class FilterInputStreamTest extends \PHPUnit_Framework_TestCase
 {
+    public function setup()
+    {
+        $this->ref = new \ReflectionClass('ZerusTech\Component\IO\Stream\Input\FilterInputStream');
+
+        $this->in = $this->ref->getProperty('in');
+        $this->in->setAccessible(true);
+
+        $this->input = $this->ref->getMethod('input');
+        $this->input->setAccessible(true);
+    }
+
+    public function tearDown()
+    {
+        $this->in = null;
+        $this->ref = null;
+    }
+
     public function testConstructor()
     {
         $input = $this->getMockForAbstractClass('ZerusTech\Component\IO\Stream\Input\AbstractInputStream', []);
         $instance = new FilterInputStream($input);
         $reflection = new \ReflectionClass('ZerusTech\Component\IO\Stream\Input\FilterInputStream');
-        $in = $reflection->getProperty('in');
-        $in->setAccessible(true);
-        $this->assertSame($input, $in->getValue($instance));
+        $this->assertSame($input, $this->in->getValue($instance));
     }
 
     public function testProxyMethods()
     {
         $input = $this->getMockBuilder('ZerusTech\Component\IO\Stream\Input\AbstractInputStream')
-                      ->setMethods(['read', 'available', 'mark', 'markSupported', 'reset', 'skip', 'close', 'isClosed'])
+                      ->setMethods(['input', 'available', 'mark', 'markSupported', 'reset', 'close', 'getPosition'])
                       ->getMock();
 
         $instance = new FilterInputStream($input);
 
-        $input->method('read')->willReturn('hello');
-        $input->method('available')->willReturn(0);
-        $input->method('mark')->with(10);
-        $input->method('markSupported')->willReturn(false);
-        $input->method('reset')->willReturn(null);
-        $input->method('skip')->with(100)->willReturn(50);
-        $input->method('isClosed')->willReturn(false);
-        $input->method('close')->willReturn(null);
+        $data = "hello";
 
-        $this->assertEquals('hello', $instance->read(100));
-        $this->assertEquals(0, $instance->available());
-        $this->assertNull($instance->mark(10));
+        $input->expects($this->exactly(2))->method('input')->will($this->returnCallback(
+            function(&$bytes, $length) use (&$data, &$position) {
+                $bytes = substr($data, 0, $length);
+                $data = substr($data, $length);
+                $count = 0 === strlen($bytes) ? -1 : strlen($bytes);
+                $position += $count;
+                return $count;
+            }));
+
+        $input->method('getPosition')->will($this->returnCallback(function() use(&$position) {return $position;}));
+
+        $input->expects($this->once())->method('available')->willReturn(strlen($data));
+        $input->expects($this->once())->method('mark')->with(5)->will($this->returnSelf());
+        $input->expects($this->once())->method('markSupported')->willReturn(false);
+        $input->expects($this->once())->method('reset')->will($this->returnSelf());
+        $input->expects($this->once())->method('close')->will($this->returnSelf());
+
+        $this->assertEquals(5, $instance->available());
+        $this->assertSame($instance, $instance->mark(5));
         $this->assertFalse($instance->markSupported());
-        $this->assertNull($instance->reset());
-        $this->assertEquals(50, $instance->skip(100));
+        $this->assertSame($instance, $instance->reset());
+        $this->assertEquals(1, $instance->skip(1));
+        $this->assertEquals(4, $this->input->invokeArgs($instance, [&$bytes, 4]));
+        $this->assertEquals('ello', $bytes);
+        $this->assertEquals(5, $instance->getPosition());
         $this->assertFalse($instance->isClosed());
-        $this->assertNull($instance->close());
+        $this->assertSame($instance, $instance->close());
+        $this->assertTrue($instance->isClosed());
     }
 }

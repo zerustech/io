@@ -27,11 +27,6 @@ class StringInputStream extends AbstractInputStream
     private $buffer;
 
     /**
-     * @var int The index of the next byte that will be read from the buffer.
-     */
-    private $position;
-
-    /**
      * Constructor.
      *
      * @param string $buffer The underlying input buffer.
@@ -41,30 +36,20 @@ class StringInputStream extends AbstractInputStream
         parent::__construct();
 
         $this->buffer = $buffer;
-
-        $this->position = 0;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function read($length = 1)
+    protected function input(&$bytes, $length)
     {
-        $data = '';
+        $bytes = substr($this->buffer, $this->position, min($length, strlen($this->buffer) - $this->position));
 
-        if (false === $this->closed && $length > 0) {
+        $count = strlen($bytes);
 
-            $bytes = min($length, strlen($this->buffer) - $this->position);
+        $this->position += $count;
 
-            if ($bytes > 0) {
-
-                $data = substr($this->buffer, $this->position, $bytes);
-
-                $this->position += $bytes;
-            }
-        }
-
-        return $data;
+        return 0 === $count ? -1 : $count;
     }
 
     /**
@@ -72,14 +57,7 @@ class StringInputStream extends AbstractInputStream
      */
     public function close()
     {
-        if (true === $this->closed) {
-
-            throw new IOException(sprintf("Already closed."));
-        }
-
-        $this->closed = true;
-
-        $this->position = 0;
+        parent::close();
 
         $this->buffer = null;
 

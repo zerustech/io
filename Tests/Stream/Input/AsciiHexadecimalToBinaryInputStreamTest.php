@@ -22,6 +22,13 @@ use ZerusTech\Component\IO\Exception;
  */
 class AsciiHexadecimalToBinaryInputStreamTest extends \PHPUnit_Framework_TestCase
 {
+    public function setup()
+    {
+        $this->ref = new \ReflectionClass('ZerusTech\Component\IO\Stream\Input\AsciiHexadecimalToBinaryInputStream');
+
+        $this->input = $this->ref->getMethod('input');
+        $this->input->setAccessible(true);
+    }
 
     /**
      * @dataProvider getDataForTestIsSpace
@@ -42,9 +49,9 @@ class AsciiHexadecimalToBinaryInputStreamTest extends \PHPUnit_Framework_TestCas
     }
 
     /**
-     * @dataProvider getDataForTestRead
+     * @dataProvider getDataForTestInput
      */
-    public function testRead($hex, $size, $bin)
+    public function testInput($hex, $size, $bin, $position)
     {
         $in = new StringInputStream($hex);
 
@@ -52,27 +59,29 @@ class AsciiHexadecimalToBinaryInputStreamTest extends \PHPUnit_Framework_TestCas
 
         $data = '';
 
-        while ('' !== ($buffer = $stream->read($size))) {
+        while (-1 !== ($count = $this->input->invokeArgs($stream, [&$bytes, $size]))) {
 
-            $data .= $buffer;
+            $data .= $bytes;
         }
 
         $this->assertEquals($bin, $data);
+
+        $this->assertEquals($position, $stream->getPosition());
     }
 
-    public function getDataForTestRead()
+    public function getDataForTestInput()
     {
         return [
-            ['68656C6C6F', 1, 'hello'],
-            ['68656C6C6F', 2, 'hello'],
-            ['68656C6C6F', 3, 'hello'],
-            ['68656C6C6F', 10, 'hello'],
-            ['68656C6C6F', 20, 'hello'],
-            ["\n\t\r 68 \n\t\r65\r \n\t6C\t\r \n6C\n\t\r 6F \n\t\r", 1, 'hello'],
-            ["\n\t\r 68 \n\t\r65\r \n\t6C\t\r \n6C\n\t\r 6F \n\t\r", 2, 'hello'],
-            ["\n\t\r 68 \n\t\r65\r \n\t6C\t\r \n6C\n\t\r 6F \n\t\r", 3, 'hello'],
-            ["\n\t\r 68 \n\t\r65\r \n\t6C\t\r \n6C\n\t\r 6F \n\t\r", 10, 'hello'],
-            ["\n\t\r 68 \n\t\r65\r \n\t6C\t\r \n6C\n\t\r 6F \n\t\r", 100, 'hello'],
+            ['68656C6C6F', 1, 'hello', 10],
+            ['68656C6C6F', 2, 'hello', 10],
+            ['68656C6C6F', 3, 'hello', 10],
+            ['68656C6C6F', 10, 'hello', 10],
+            ['68656C6C6F', 20, 'hello', 10],
+            ["\n\t\r 68 \n\t\r65\r \n\t6C\t\r \n6C\n\t\r 6F \n\t\r", 1, 'hello', 34],
+            ["\n\t\r 68 \n\t\r65\r \n\t6C\t\r \n6C\n\t\r 6F \n\t\r", 2, 'hello', 34],
+            ["\n\t\r 68 \n\t\r65\r \n\t6C\t\r \n6C\n\t\r 6F \n\t\r", 3, 'hello', 34],
+            ["\n\t\r 68 \n\t\r65\r \n\t6C\t\r \n6C\n\t\r 6F \n\t\r", 10, 'hello', 34],
+            ["\n\t\r 68 \n\t\r65\r \n\t6C\t\r \n6C\n\t\r 6F \n\t\r", 100, 'hello', 34],
         ];
     }
 

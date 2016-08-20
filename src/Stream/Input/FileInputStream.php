@@ -34,12 +34,6 @@ class FileInputStream extends AbstractInputStream
     private $mode;
 
     /**
-     * @var int The index of the next byte that will be read from the
-     * underlying file.
-     */
-    private $position;
-
-    /**
      * @var resource The resource that represents the underlying file.
      */
     private $resource;
@@ -57,8 +51,6 @@ class FileInputStream extends AbstractInputStream
         $this->source = $source;
 
         $this->mode = $mode;
-
-        $this->position = 0;
 
         $this->resource = @fopen($source, $mode);
 
@@ -112,23 +104,20 @@ class FileInputStream extends AbstractInputStream
     /**
      * {@inheritdoc}
      */
-    public function read($length = 1)
+    protected function input(&$bytes, $length)
     {
-        $data = '';
+        $bytes = @fread($this->resource, $length);
 
-        if (true !== $this->closed) {
-
-            $data = @fread($this->resource, $length);
-        }
-
-        if (false === $data) {
+        if (false === $bytes) {
 
             throw new IOException(sprintf("An unknown error occured when reading data from file %s.", $this->source));
         }
 
-        $this->position += strlen($data);
+        $count = strlen($bytes);
 
-        return $data;
+        $this->position += $count;
+
+        return 0 === $count ? -1 : $count;
     }
 
     /**

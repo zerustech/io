@@ -57,13 +57,13 @@ class AsciiHexadecimalToBinaryInputStream extends FilterInputStream
      * stream and converts the data from ascii hexadecimal format to binary
      * format.
      */
-    public function read($length = 1)
+    protected function input(&$buffer, $length)
     {
-        $bin = '';
+        $buffer = '';
 
-        $hex = parent::read($length);
+        $count = parent::input($hex, $length);
 
-        for ($i = 0; $i < strlen($hex); $i++) {
+        for ($i = 0; $i < $count; $i++) {
 
             if (true === static::isSpace($hex[$i])) {
 
@@ -72,37 +72,22 @@ class AsciiHexadecimalToBinaryInputStream extends FilterInputStream
 
             $this->buffer[] = $hex[$i];
 
-            $bin .= $this->hex2bin();
+            if (2 === count($this->buffer)) {
+
+                $buffer .= chr(hexdec(array_shift($this->buffer).array_shift($this->buffer)));
+            }
         }
 
         // If the end of stream has been reached, the process ends here,
         // otherwise tries to read further bytes from the subordinate stream,
         // till a hexadecimal pair is found or the end of stream has been
         // reached.
-        if ( strlen($hex) > 0 && '' === $bin) {
+        if ( $count > 0 && '' === $buffer) {
 
-            $bin = $this->read();
+            $count += max(0, $this->input($buffer, 1));
         }
 
-        return $bin;
-    }
-
-    /**
-     * This method shifts two hexadecimal characters from the internal buffer,
-     * and converts them into one binary byte.
-     *
-     * @return string The binary byte converted from the hexadecimal data.
-     */
-    private function hex2bin()
-    {
-        $bin = '';
-
-        if (2 === count($this->buffer)) {
-
-            $bin = chr(hexdec(array_shift($this->buffer).array_shift($this->buffer)));
-        }
-
-        return $bin;
+        return $count;
     }
 
     /**

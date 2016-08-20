@@ -36,6 +36,8 @@ class FilterInputStream extends AbstractInputStream
      */
     public function __construct(InputStreamInterface $in)
     {
+        parent::__construct();
+
         $this->in = $in;
     }
 
@@ -43,11 +45,15 @@ class FilterInputStream extends AbstractInputStream
      * {@inheritdoc}
      *
      * Redirects request to the subordinate input stream by calling
-     * ``$this->in->read()``
+     * ``$this->in->input()``
      */
-    public function read($length = 1)
+    protected function input(&$bytes, $length)
     {
-        return $this->in->read($length);
+        $count = $this->in->input($bytes, $length);
+
+        $this->position = $this->in->getPosition();
+
+        return $count;
     }
 
     /**
@@ -67,9 +73,11 @@ class FilterInputStream extends AbstractInputStream
      * Redirects request to the subordinate input stream by calling
      * ``$this->in->mark()``
      */
-    public function mark($readLimit)
+    public function mark($limit)
     {
-        return $this->in->mark($readLimit);
+        $this->in->mark($limit);
+
+        return $this;
     }
 
     /**
@@ -91,29 +99,9 @@ class FilterInputStream extends AbstractInputStream
      */
     public function reset()
     {
-        return $this->in->reset();
-    }
+        $this->in->reset();
 
-    /**
-     * {@inheritdoc}
-     *
-     * Redirects request to the subordinate input stream by calling
-     * ``$this->in->skip()``
-     */
-    public function skip($byteCount)
-    {
-        return $this->in->skip($byteCount);
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * Redirects request to the subordinate input stream by calling
-     * ``$this->in->isClosed()``
-     */
-    public function isClosed()
-    {
-        return $this->in->isClosed();
+        return $this;
     }
 
     /**
@@ -124,6 +112,10 @@ class FilterInputStream extends AbstractInputStream
      */
     public function close()
     {
-        return $this->in->close();
+        $this->in->close();
+
+        parent::close();
+
+        return $this;
     }
 }

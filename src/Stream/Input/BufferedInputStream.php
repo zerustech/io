@@ -38,12 +38,6 @@ class BufferedInputStream extends FilterInputStream
     private $bufferSize = 1024;
 
     /**
-     * @var int The index of the next byte that will be read from the buffer.
-     * When ``$this->position === $this->count``, the buffer is empty.
-     */
-    private $position;
-
-    /**
      * @var int The number of valid bytes currently in the buffer. It is also
      * the index of the buffer position one byte past the end of the valid data.
      */
@@ -82,7 +76,7 @@ class BufferedInputStream extends FilterInputStream
 
         $this->bufferSize = $bufferSize;
 
-        $this->position = $this->count = 0;
+        $this->count = 0;
 
         $this->mark = -1;
 
@@ -92,7 +86,7 @@ class BufferedInputStream extends FilterInputStream
     /**
      * {@inheritdoc}
      */
-    public function read($length = 1)
+    protected function input(&$bytes, $length)
     {
         $bytes = '';
 
@@ -100,17 +94,17 @@ class BufferedInputStream extends FilterInputStream
 
         while ($remaining > 0) {
 
-            $bytesRead = min($remaining, ($this->count - $this->position));
+            $numberOfBytes = min($remaining, ($this->count - $this->position));
 
-            if ($bytesRead > 0) {
+            if ($numberOfBytes > 0) {
 
                 // Tries to read bytes, if any, from current buffer first.
 
-                $bytes .= substr($this->buffer, $this->position, $bytesRead);
+                $bytes .= substr($this->buffer, $this->position, $numberOfBytes);
 
-                $this->position += $bytesRead;
+                $this->position += $numberOfBytes;
 
-                $remaining -= $bytesRead;
+                $remaining -= $numberOfBytes;
             }
 
             if ($this->position === $this->count && false === $this->fillBuffer()) {
@@ -125,7 +119,9 @@ class BufferedInputStream extends FilterInputStream
             }
         }
 
-        return $bytes;
+        $count = $length - $remaining;
+
+        return 0 === $count ? -1 : $count;
     }
 
     /**
@@ -139,9 +135,9 @@ class BufferedInputStream extends FilterInputStream
     /**
      * {@inheritdoc}
      */
-    public function mark($markLimit)
+    public function mark($limit)
     {
-        $this->markLimit = $markLimit;
+        $this->markLimit = $limit;
 
         $this->mark = $this->position;
 
@@ -174,14 +170,6 @@ class BufferedInputStream extends FilterInputStream
     /**
      * {@inheritdoc}
      */
-    public function skip($byteCount)
-    {
-        return strlen($this->read($byteCount));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function close()
     {
         parent::close();
@@ -189,6 +177,16 @@ class BufferedInputStream extends FilterInputStream
         $this->mark = -1;
 
         return $this;
+    }
+
+    /**
+     * Returns the index of the next byte in current stream.
+     *
+     * @return int The index of the next byte.
+     */
+    public function getPosition()
+    {
+        return $this->position;
     }
 
     /**
@@ -223,12 +221,12 @@ class BufferedInputStream extends FilterInputStream
             $this->mark = 0;
         }
 
-        $bytes = parent::read($this->bufferSize);
+        $count = max(0, $this->in->input($bytes, $this->bufferSize));
 
         $this->buffer .= $bytes;
 
-        $this->count += strlen($bytes);
+        $this->count += $count;
 
-        return strlen($bytes) > 0;
+        return  $count > 0;
     }
 }

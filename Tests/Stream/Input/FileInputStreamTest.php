@@ -27,17 +27,18 @@ class FileInputStreamTest extends \PHPUnit_Framework_TestCase
 
         $this->ref = new \ReflectionClass('ZerusTech\Component\IO\Stream\Input\FileInputStream');
 
-        $this->resourceProperty = $this->ref->getProperty('resource');
+        $this->resource = $this->ref->getProperty('resource');
+        $this->resource->setAccessible(true);
 
-        $this->resourceProperty->setAccessible(true);
+        $this->input = $this->ref->getMethod('input');
+        $this->input->setAccessible(true);
     }
 
     public function tearDown()
     {
         $this->base = null;
-
-        $this->resourceProperty = null;
-
+        $this->input = null;
+        $this->resource = null;
         $this->ref = null;
     }
 
@@ -56,7 +57,7 @@ class FileInputStreamTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($closed, $stream->isClosed());
 
-        $resource = $this->resourceProperty->getValue($stream);
+        $resource = $this->resource->getValue($stream);
 
         if ($resource) {
 
@@ -67,10 +68,7 @@ class FileInputStreamTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals($mode, $meta['mode']);
         }
 
-        $ref = new \ReflectionClass('ZerusTech\Component\IO\Stream\Input\FileInputStream');
-        $property = $ref->getProperty('position');
-        $property->setAccessible(true);
-        $this->assertEquals(0, $property->getValue($stream));
+        $this->assertEquals(0, $stream->getPosition());
     }
 
     public function getDataForTestConstructor()
@@ -81,26 +79,34 @@ class FileInputStreamTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
-    public function testRead()
+    public function testInput()
     {
+        // "hello, world!\n"
         $stream = new Input\FileInputStream($this->base.'input_01.txt', 'rb');
 
-        $this->assertEquals('hello', $stream->read(5));
+        $this->assertEquals(5, $this->input->invokeArgs($stream, [&$bytes, 5]));
+        $this->assertEquals('hello', $bytes);
+
+        $this->assertEquals(9, $this->input->invokeArgs($stream, [&$bytes, 10]));
+        $this->assertEquals(", world!\n", $bytes);
+
+        $this->assertEquals(-1, $this->input->invokeArgs($stream, [&$bytes, 1]));
+        $this->assertEquals('', $bytes);
     }
 
     /**
      * @expectedException ZerusTech\Component\IO\Exception\IOException
      * @expectedExceptionMessageRegExp /An unknown error occured when reading data from file .+/
      */
-    public function testIOExceptionForRead()
+    public function testIOExceptionForInput()
     {
         $stream = new Input\FileInputStream($this->base.'input_01.txt', 'rb');
 
-        $resource = $this->resourceProperty->getValue($stream);
+        $resource = $this->resource->getValue($stream);
 
         fclose($resource);
 
-        $data = $stream->read(5);
+        $this->input->invokeArgs($stream, [&$bytes, 5]);
     }
 
     public function testClose()
@@ -111,12 +117,9 @@ class FileInputStreamTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($stream->isClosed());
 
-        $this->assertNull($this->resourceProperty->getValue($stream));
+        $this->assertNull($this->resource->getValue($stream));
 
-        $ref = new \ReflectionClass('ZerusTech\Component\IO\Stream\Input\FileInputStream');
-        $property = $ref->getProperty('position');
-        $property->setAccessible(true);
-        $this->assertEquals(0, $property->getValue($stream));
+        $this->assertEquals(0, $stream->getPosition());
     }
 
     /**
@@ -140,7 +143,7 @@ class FileInputStreamTest extends \PHPUnit_Framework_TestCase
     {
         $stream = new Input\FileInputStream($this->base.'input_01.txt', 'rb');
 
-        $resource = $this->resourceProperty->getValue($stream);
+        $resource = $this->resource->getValue($stream);
 
         fclose($resource);
 

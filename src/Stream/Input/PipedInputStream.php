@@ -49,6 +49,8 @@ class PipedInputStream extends AbstractInputStream implements PipedInputStreamIn
      */
     public function __construct(PipedOutputStreamInterface $upstream = null)
     {
+        parent::__construct();
+
         $this->buffer = '';
 
         $this->upstream = $upstream;
@@ -86,15 +88,15 @@ class PipedInputStream extends AbstractInputStream implements PipedInputStreamIn
     /**
      * {@inheritdoc}
      */
-    public function read($length = 1)
+    protected function input(&$buffer, $length)
     {
         $length = min($length, strlen($this->buffer));
 
-        $data = substr($this->buffer, 0, $length);
+        $buffer = substr($this->buffer, 0, $length);
 
         $this->buffer = substr($this->buffer, $length);
 
-        return $data;
+        return 0 === $length ? -1 : $length;
     }
 
     /**

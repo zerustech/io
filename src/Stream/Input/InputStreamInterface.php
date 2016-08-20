@@ -21,16 +21,67 @@ use ZerusTech\Component\IO\Exception\IOException;
 interface InputStreamInterface
 {
     /**
-     * Reads up to ``$length`` bytes from the input stream and return the data
-     * as a string.
+     * This method reads up to ``$length`` bytes from a stream and stores them
+     * into the caller supplied buffer. The actual number of bytes read is
+     * returned as an int. A -1 is returned to indicate the end of the stream.
      *
-     * @param int $length The maximum bytes to read.
-     * @return string The string consists of the bytes read.
-     * @throws IOException If an I/O error occurs.
-     * @deprecated This method is deprecated as of 1.1.8 and will be redefined
-     * in 2.0.
+     * This method operates by calling ``readSubstring()`` method like so:
+     * ``$this->readSubstring($bytes, 0, $length);``
+     *
+     * @param string $bytes The buffer into which the bytes read will be stored.
+     * @param int $length The requested number of bytes to read, 1 by default.
+     * @return int The actual number of bytes read or -1 if end of stream.
      */
-    public function read($length = 1);
+    public function read(&$bytes, $length = 1);
+
+    /**
+     * This method read bytes from a stream and stores them into a caller
+     * supplied buffer. It starts storing the data at index ``$offset`` into the
+     * buffer and attempts to read ``$length`` bytes. The actual number of bytes
+     * read is returned as an int. A -1 is returned to indicate the end of the
+     * stream.
+     *
+     * Firstly:
+     *
+     * If ``$offset >= 0``, the bytes read start to store at offset'th position
+     * in the string, counting from zero, left to right.
+     *
+     * If ``$offset < 0``, ``$offset = max(0, strlen($bytes) + $offset)``.
+     *
+     * If ``$length > 0``, up to ``$length`` bytes will be read and stored in
+     * the buffer.
+     *
+     * If ``$length < 0``,
+     * ``$length = max(0, strlen($bytes) - $offset + $length)``.
+     *
+     * Finally:
+     *
+     * If ``$offset > strlen($bytes)``, an out of bounds exception is thrown.
+     *
+     * If ``$length`` is 0, null or false, an out of bounds exception is thrown.
+     *
+     * So basically, the logic is as follows:
+     *
+     *     $offset = 0 > $offset ? max(0, strlen($bytes) + $offset) : $offset;``
+     *
+     *     $length = 0 > $length ? max(0, strlen($bytes) - $offset + $length) : $length;``
+     *
+     *     if ($offset > strlen($bytes) || 0 === $length || null = $length || false == $length) {
+     *
+     *         throw new \OutOfBoundsException(...);
+     *     }
+     *
+     * NOTE: for ``$offset``, the criteria is a bit different with it for output
+     * stream. For output stream, the criteria is ``$offset >= strlen(...)``,
+     * for the input stream, it is ``$offset > strlen(...)``.
+     *
+     * @param string $bytes The buffer into which the bytes read should be
+     * stored.
+     * @param int $offset The offset into the buffer to start storing bytes.
+     * @param int $length The requested number of bytes to read.
+     * @return int The actual number of bytes read, or -1 if end of stream.
+     */
+    public function readSubstring(&$bytes, $offset, $length);
 
     /**
      * This method returns the number of bytes that can be read from this stream
@@ -54,11 +105,11 @@ interface InputStreamInterface
      * is called, then the mark is invalid and the stream object instance is not
      * required to remember the mark.
      *
-     * @param int $readLimit The number of bytes that can be read from this
+     * @param int $limit The number of bytes that can be read from this
      * stream before the mark becomes invalid.
      * @see reset()
      */
-    public function mark($readLimit);
+    public function mark($limit);
 
     /**
      * This method returns a boolean that indicates whether the mark/reset
@@ -87,9 +138,9 @@ interface InputStreamInterface
      * the actual number of bytes skipped, which may be less than the requred
      * amount.
      *
-     * @param int $byteCount The requested number of bytes to skip.
+     * @param int $length The requested number of bytes to skip.
      * @return int The actual number of bytes skipped.
      * @throws IOException If an error occurs.
      */
-    public function skip($byteCount);
+    public function skip($length);
 }

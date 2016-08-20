@@ -28,13 +28,13 @@ class StringInputStreamTest extends \PHPUnit_Framework_TestCase
         $this->buffer = $this->ref->getProperty('buffer');
         $this->buffer->setAccessible(true);
 
-        $this->position = $this->ref->getProperty('position');
-        $this->position->setAccessible(true);
+        $this->input = $this->ref->getMethod('input');
+        $this->input->setAccessible(true);
     }
 
     public function tearDown()
     {
-        $this->position = null;
+        $this->input = null;
         $this->buffer = null;
         $this->ref = null;
     }
@@ -43,41 +43,48 @@ class StringInputStreamTest extends \PHPUnit_Framework_TestCase
     {
         $stream = new Input\StringInputStream('hello');
         $this->assertEquals('hello', $this->buffer->getValue($stream));
-        $this->assertEquals(0, $this->position->getValue($stream));
+        $this->assertEquals(0, $stream->getPosition());
         $this->assertFalse($stream->isClosed());
     }
 
     /**
-     * @dataProvider getDataForTestRead
+     * @dataProvider getDataForTestInput
      */
-    public function testRead($expected, $buffer, $length)
+    public function testInput($buffer, $length, $count, $result)
     {
+        $bytes = '';
+
         $stream = new Input\StringInputStream($buffer);
-        $this->assertEquals($expected, $stream->read($length));
+
+        $this->assertEquals($count, $this->input->invokeArgs($stream, [&$bytes, $length]));
+
+        $this->assertEquals($result, $bytes);
     }
 
-    public function getDataForTestRead()
+    public function getDataForTestInput()
     {
         return [
-            ['', 'hello', -1],
-            ['hello', 'hello', 5],
-            ['hello', 'hello', 10],
-            ['he', 'hello', 2]
+            ['hello', 5, 5, 'hello'],
+            ['hello', 3, 3, 'hel'],
+            ['', 5, -1, ''],
         ];
     }
 
     public function testClose()
     {
         $stream = new Input\StringInputStream('hello');
+        $stream->skip(5);
+        $this->assertEquals(5, $stream->getPosition());
+
         $this->assertSame($stream, $stream->close());
         $this->assertTrue($stream->isClosed());
-        $this->assertEquals(0, $this->position->getValue($stream));
+        $this->assertEquals(0, $stream->getPosition());
         $this->assertNull($this->buffer->getValue($stream));
     }
 
     /**
      * @expectedException ZerusTech\Component\IO\Exception\IOException
-     * @expectedExceptionMessage Already closed.
+     * @expectedExceptionMessage Stream is already closed, can't be closed again.
      */
     public function testCloseOnClosedStream()
     {

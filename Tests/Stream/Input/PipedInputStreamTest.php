@@ -31,6 +31,9 @@ class PipedInputStreamTest extends \PHPUnit_Framework_TestCase
 
         $this->buffer = $this->ref->getProperty('buffer');
         $this->buffer->setAccessible(true);
+
+        $this->input = $this->ref->getMethod('input');
+        $this->input->setAccessible(true);
     }
 
     public function tearDown()
@@ -150,26 +153,37 @@ class PipedInputStreamTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider getDataForTestRead
+     * @dataProvider getDataForTestInput
      */
-    public function testRead($data, $length, $expected)
+    public function testInput($data, $length, $expected, $count)
     {
         $input = new PipedInputStream();
 
         $this->buffer->setValue($input, $data);
 
-        $bytes = $input->read($length);
+        $this->assertEquals($count, $this->input->invokeArgs($input, [&$bytes, $length]));
 
         $this->assertEquals($expected, $bytes);
+
+        $this->assertEquals(0, $input->getPosition());
     }
 
-    public function getDataForTestRead()
+    public function getDataForTestInput()
     {
         return [
-            ['***', 1, '*'],
-            ['***', 3, '***'],
-            ['***', 5, '***'],
-            ['', 2, ''],
+            ['***', 1, '*', 1],
+            ['***', 3, '***', 3],
+            ['***', 5, '***', 3],
+            ['', 2, '', -1],
         ];
+    }
+
+    public function testReceive()
+    {
+        $input = new PipedInputStream();
+        $this->buffer->setValue($input, 'hello');
+        $input->receive(', world!');
+
+        $this->assertEquals('hello, world!', $this->buffer->getValue($input));
     }
 }

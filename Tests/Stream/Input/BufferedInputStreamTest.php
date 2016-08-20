@@ -43,15 +43,19 @@ class BufferedInputStreamTest extends \PHPUnit_Framework_TestCase
         $this->markLimit = $this->ref->getProperty('markLimit');
         $this->markLimit->setAccessible(true);
 
+        $this->input = $this->ref->getMethod('input');
+        $this->input->setAccessible(true);
+
         $this->fillBuffer = $this->ref->getMethod('fillBuffer');
         $this->fillBuffer->setAccessible(true);
     }
 
     public function tearDown()
     {
+        $this->buffer = $this->bufferSize = $this->count = null;
+        $this->mark = $this->markLimit = $this->position = null;
+        $this->input = $this->fillBuffer = null;
         $this->ref = null;
-        $this->bufferSize = $this->position = $this->count = null;
-        $this->mark = $this->markLimit = $this->fillBuffer = null;
     }
 
     public function testConstructor()
@@ -77,7 +81,7 @@ class BufferedInputStreamTest extends \PHPUnit_Framework_TestCase
 
     /**
      * The fillBuffer() method is called only when there is no byte available in
-     * the buffer (post === count).
+     * the buffer (position === count).
      * All test cases in this method are based on this pre-requisite.
      */
     public function testFillBuffer()
@@ -510,14 +514,29 @@ class BufferedInputStreamTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(3, $count->getValue($instance));
     }
 
-    public function testRead()
+    public function testInput()
     {
         $in = new StringInputStream('123456789ABCDEF');
         $instance = new BufferedInputStream($in, 4);
-        $this->assertEquals('1', $instance->read());
-        $this->assertEquals('23456', $instance->read(5));
-        $this->assertEquals('789ABCDEF', $instance->read(11));
-        $this->assertEquals('', $instance->read(1));
+
+        $this->assertEquals(1, $this->input->invokeArgs($instance, [&$bytes, 1]));
+        $this->assertEquals('1', $bytes);
+        $this->assertEquals('1234', $this->buffer->getValue($instance));
+        $this->assertEquals(1, $instance->getPosition());
+
+        $this->assertEquals(5, $this->input->invokeArgs($instance, [&$bytes, 5]));
+        $this->assertEquals('23456', $bytes);
+        $this->assertEquals('5678', $this->buffer->getValue($instance));
+        $this->assertEquals(2, $instance->getPosition());
+
+        $this->assertEquals(9, $this->input->invokeArgs($instance, [&$bytes, 9]));
+        $this->assertEquals('789ABCDEF', $bytes);
+        $this->assertEquals('', $this->buffer->getValue($instance));
+        $this->assertEquals(0, $instance->getPosition());
+
+        $this->assertEquals(-1, $this->input->invokeArgs($instance, [&$bytes, 1]));
+        $this->assertEquals('', $bytes);
+        $this->assertEquals('', $this->buffer->getValue($instance));
     }
 
     public function testMarkAndReset()
@@ -529,7 +548,8 @@ class BufferedInputStreamTest extends \PHPUnit_Framework_TestCase
         //^ (mark)
         //   ^ (pos)
         //     ^ (count)
-        $this->assertEquals('12', $instance->read(2));
+        $this->assertEquals(2, $instance->read($bytes, 2));
+        $this->assertEquals('12', $bytes);
 
         // 1234
         //   ^ (mark)
@@ -541,7 +561,8 @@ class BufferedInputStreamTest extends \PHPUnit_Framework_TestCase
         // ^ (mark)
         //    ^ (pos)
         //       ^ (count)
-        $this->assertEquals('345', $instance->read(3));
+        $this->assertEquals(3, $instance->read($bytes, 3));
+        $this->assertEquals('345', $bytes);
 
         // 345678
         // ^ (mark)
@@ -553,13 +574,15 @@ class BufferedInputStreamTest extends \PHPUnit_Framework_TestCase
         // ^ (mark)
         //    ^ (pos)
         //       ^ (count)
-        $this->assertEquals('345', $instance->read(3));
+        $this->assertEquals(3, $instance->read($bytes, 3));
+        $this->assertEquals('345', $bytes);
 
         //  9ABC
         // ^ (mark)
         //  ^ (pos)
         //      ^ (count)
-        $this->assertEquals('678', $instance->read(3));
+        $this->assertEquals(3, $instance->read($bytes, 3));
+        $this->assertEquals('678', $bytes);
     }
 
     public function testValidInvalidMark()
@@ -571,7 +594,8 @@ class BufferedInputStreamTest extends \PHPUnit_Framework_TestCase
         // ^ (mark)
         //       ^ (pos)
         //        ^ (count)
-        $this->assertEquals('GHIJK', $instance->read(5));
+        $this->assertEquals(5, $instance->read($bytes, 5));
+        $this->assertEquals('GHIJK', $bytes);
 
         //  GHIJKL
         //       ^ (mark)
@@ -589,7 +613,8 @@ class BufferedInputStreamTest extends \PHPUnit_Framework_TestCase
         // there are still some bytes available in current buffer, so there is
         // no need to refill current buffer, therefore, the mark remains valid
         // under this circumstance.
-        $this->assertEquals('L1234', $instance->read(5));
+        $this->assertEquals(5, $instance->read($bytes, 5));
+        $this->assertEquals('L1234', $bytes);
 
         //  L12345
         //  ^ (mark)
@@ -603,7 +628,8 @@ class BufferedInputStreamTest extends \PHPUnit_Framework_TestCase
         //       ^ (pos)
         //        ^ (count)
         //
-        $this->assertEquals('L1234', $instance->read(5));
+        $this->assertEquals(5, $instance->read($bytes, 5));
+        $this->assertEquals('L1234', $bytes);
     }
 
     /**
@@ -626,15 +652,15 @@ class BufferedInputStreamTest extends \PHPUnit_Framework_TestCase
 
         $in = new StringInputStream('123456789ABCDEF');
         $instance = new BufferedInputStream($in, 4);
-        $instance->read(2);
+        $instance->read($bytes, 2);
         $instance->mark(4);
-        $instance->read(5);
+        $instance->read($bytes, 5);
 
         $in = new StringInputStream('123456789ABCDEF');
         $instance = new BufferedInputStream($in, 4);
-        $instance->read(2);
+        $instance->read($bytes, 2);
         $instance->mark(4);
-        $instance->read(6);
+        $instance->read($bytes, 6);
         $data[][] = $instance;
 
         return $data;
@@ -648,7 +674,7 @@ class BufferedInputStreamTest extends \PHPUnit_Framework_TestCase
     {
         $in = new StringInputStream('123456789ABCDEF');
         $instance = new BufferedInputStream($in, 4);
-        $instance->read(2);
+        $instance->read($bytes, 2);
         $instance->mark(4);
         $instance->close();
         $instance->reset();
@@ -678,16 +704,13 @@ class BufferedInputStreamTest extends \PHPUnit_Framework_TestCase
         $instance->skip(2);
         $instance->mark(4);
 
-        $ref = new \ReflectionClass('ZerusTech\Component\IO\Stream\Input\BufferedInputStream');
-
-        $mark = $ref->getProperty('mark');
-        $mark->setAccessible(true);
-
         $this->assertFalse($instance->isClosed());
-        $this->assertEquals(2, $mark->getValue($instance));
+        $this->assertEquals(2, $this->mark->getValue($instance));
+        $this->assertEquals(2, $instance->getPosition());
 
         $instance->close();
         $this->assertTrue($instance->isClosed());
-        $this->assertEquals(-1, $mark->getValue($instance));
+        $this->assertEquals(-1, $this->mark->getValue($instance));
+        $this->assertEquals(0, $instance->getPosition());
     }
 }
