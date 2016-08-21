@@ -51,9 +51,13 @@ interface OutputStreamInterface
      *
      * Finally:
      *
-     * If ``$offset >= strlen($bytes)``, an out of bounds exception is thrown.
+     * If ``$offset > 0 && $offset >= strlen($bytes)``, an out of bounds exception is thrown. ($bytes is not '')
      *
-     * If ``$length`` is 0, null or false, an out of bounds exception is thrown.
+     * If ``$length`` is null or false, an out of bounds exception is thrown.
+     *
+     * If ``$length === 0``, '' is written.
+     *
+     * If ``strlen($bytes) === 0 and $offset === 0``, '' is written.
      *
      * So basically, the logic is as follows:
      *
@@ -61,7 +65,7 @@ interface OutputStreamInterface
      *
      *     $length = 0 > $length ? max(0, strlen($bytes) - $offset + $length) : $length;``
      *
-     *     if ($offset >= strlen($bytes) || 0 === $length || null === $length || false === $length) {
+     *     if ($offset > 0 && $offset >= strlen($bytes) || null === $length || false === $length) {
      *
      *         throw new \OutOfBoundsException(...);
      *     }

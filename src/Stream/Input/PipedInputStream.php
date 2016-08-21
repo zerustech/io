@@ -90,13 +90,13 @@ class PipedInputStream extends AbstractInputStream implements PipedInputStreamIn
      */
     protected function input(&$buffer, $length)
     {
-        $length = min($length, strlen($this->buffer));
+        $count = min($length, strlen($this->buffer));
 
-        $buffer = substr($this->buffer, 0, $length);
+        $buffer = substr($this->buffer, 0, $count).'';
 
-        $this->buffer = substr($this->buffer, $length);
+        $this->buffer = substr($this->buffer, $count).'';
 
-        return 0 === $length ? -1 : $length;
+        return $length > 0 && 0 === $count ? -1 : $count;
     }
 
     /**

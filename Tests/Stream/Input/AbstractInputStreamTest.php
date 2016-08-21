@@ -106,7 +106,7 @@ class AbstractInputStreamTest extends \PHPUnit_Framework_TestCase
             ->setMethods(['input'])
             ->getMock();
 
-        $stub->method('input')->will($this->returnCallback(function(&$bytes, $length) use($data) {$bytes = substr($data, 0, $length); return 0 === strlen($bytes) ? -1 : strlen($bytes); }));
+        $stub->method('input')->will($this->returnCallback(function(&$bytes, $length) use($data) {$bytes = substr($data, 0, $length); return $length > 0 && 0 === strlen($bytes) ? -1 : strlen($bytes); }));
 
         $this->assertEquals($count, $stub->readSubstring($source, $offset, $length));
 
@@ -130,6 +130,13 @@ class AbstractInputStreamTest extends \PHPUnit_Framework_TestCase
             ['*****', 1, -2, 'hello', 2, '*he'],
             ['*****', 0, 5, '', -1, ''],
             ['*****', 2, 5, '', -1, '**'],
+            ['', 0, 5, 'hello', 5, 'hello'],
+            ['', -1, 5, 'hello', 5, 'hello'],
+            ['', 0, 0, 'hello', 0, ''],
+            ['', 0, -1, 'hello', 0, ''],
+            ['*****', 0, -5, 'hello', 0, ''],
+            ['*****', 0, -6, 'hello', 0, ''],
+            ['*****', 1, 0, 'hello', 0, '*'],
         ];
     }
 
@@ -153,9 +160,6 @@ class AbstractInputStreamTest extends \PHPUnit_Framework_TestCase
     {
         return [
             ['*****', 6, 5],
-            ['*****', 0, -5],
-            ['*****', 0, -6],
-            ['*****', 1, 0],
             ['*****', 2, null],
             ['*****', 2, false],
         ];

@@ -7,6 +7,17 @@ This changelog references the relavant changes (bug and security fixes) done in
 To get the new features in this major release, check the list at the bottom of
 this file.
 
+* 2.0.1 ()
+    * In readSubstring(), allows the computed offset to be zero, if source
+      string is ''.
+    * In readSubstring(), allows the computed length to be zero, so that empty
+      string is allowed to be read.
+    * In input(), when length is zero, it returns 0, instead of -1. 
+    * In writeSubstring(), allows the computed offset to be zero, if source
+      string is ''.
+    * In writeSubstring(), allows the computed length to be zero, so that empty
+      string is allowed to be written.
+
 * 2.0.0 (2016-08-20)
     * Removed getResource() method
     * Removed offset() method
