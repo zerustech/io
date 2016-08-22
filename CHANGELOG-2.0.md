@@ -17,6 +17,10 @@ this file.
       string is ''.
     * In writeSubstring(), allows the computed length to be zero, so that empty
       string is allowed to be written.
+    * Deprecated AsciiHexadecimalToBinaryInputStream and moved it to
+      zerustech/postscript package.
+    * Deprecated BinaryToAsciiHexadecimalOutputStream and moved it to
+      zerustech/postscript package.
 
 * 2.0.0 (2016-08-20)
     * Removed getResource() method
