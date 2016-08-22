@@ -85,7 +85,7 @@ abstract class AbstractOutputStream implements OutputStreamInterface, ClosableIn
 
         $length = 0 > $length ? max(0, strlen($bytes) - $offset + $length) : $length;
 
-        if ($offset >= strlen($bytes) || 0 === $length || null === $length || false === $length) {
+        if ($offset > 0 && $offset >= strlen($bytes) || null === $length || false === $length) {
 
             throw new \OutOfBoundsException(sprintf("Invalid offset or length."));
         }
@@ -95,7 +95,7 @@ abstract class AbstractOutputStream implements OutputStreamInterface, ClosableIn
             throw new IOException(sprintf("Stream is already closed, can't be written."));
         }
 
-        return $this->output(substr($bytes, $offset, $length));
+        return $this->output(substr($bytes, $offset, $length).'');
     }
 
     /**

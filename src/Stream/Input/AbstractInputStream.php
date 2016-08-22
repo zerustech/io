@@ -59,7 +59,7 @@ abstract class AbstractInputStream implements InputStreamInterface, ClosableInte
 
         $length = $length < 0 ? max(0, strlen($bytes) - $offset + $length) : $length;
 
-        if ($offset > strlen($bytes) || 0 === $length || null === $length || false === $length) {
+        if ($offset > strlen($bytes) || null === $length || false === $length) {
 
             throw new \OutOfBoundsException(sprintf("Invalid offset or length."));
         }
