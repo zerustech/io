@@ -137,6 +137,7 @@ class AbstractInputStreamTest extends \PHPUnit_Framework_TestCase
             ['*****', 0, -5, 'hello', 0, ''],
             ['*****', 0, -6, 'hello', 0, ''],
             ['*****', 1, 0, 'hello', 0, '*'],
+            ['*****', 0, 1, '', -1, ''],
         ];
     }
 

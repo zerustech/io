@@ -71,7 +71,7 @@ abstract class AbstractInputStream implements InputStreamInterface, ClosableInte
 
         $data = '';
 
-        $count = $this->input($data, $length);
+        $count = $length > 0 ? $this->input($data, $length) : $length;
 
         $bytes = substr($bytes, 0, $offset).$data;
 
