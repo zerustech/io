@@ -69,9 +69,7 @@ abstract class AbstractInputStream implements InputStreamInterface, ClosableInte
             throw new IOException(sprintf("Stream is already closed, can't be read."));
         }
 
-        $data = '';
-
-        $count = $length > 0 ? $this->input($data, $length) : $length;
+        $count = $this->input($data, $length);
 
         $bytes = substr($bytes, 0, $offset).$data;
 
