@@ -108,7 +108,7 @@ class FileInputStream extends AbstractInputStream
     {
         $bytes = @fread($this->resource, $length);
 
-        if (false === $bytes && $length > 0) {
+        if (false === $bytes) {
 
             throw new IOException(sprintf("An unknown error occured when reading data from file %s.", $this->source));
         }

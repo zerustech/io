@@ -58,9 +58,7 @@ interface InputStreamInterface
      *
      * If ``$offset > strlen($bytes)``, an out of bounds exception is thrown.
      *
-     * If ``$length`` is null or false, an out of bounds exception is thrown.
-     *
-     * If ``$length === 0``, '' is read.
+     * If ``$length`` is 0, null or false, an out of bounds exception is thrown.
      *
      * If ``strlen($bytes) === 0 and $offset === 0``, '' is read.
      *
@@ -70,14 +68,16 @@ interface InputStreamInterface
      *
      *     $length = 0 > $length ? max(0, strlen($bytes) - $offset + $length) : $length;``
      *
-     *     if ($offset > strlen($bytes) || null = $length || false == $length) {
+     *     if ($offset > strlen($bytes) || 0 === $length || null === $length || false === $length) {
      *
      *         throw new \OutOfBoundsException(...);
      *     }
      *
-     * NOTE: for ``$offset``, the criteria is a bit different with it for output
-     * stream. For output stream, the criteria is ``$offset >= strlen(...)``,
-     * for the input stream, it is ``$offset > strlen(...)``.
+     * NOTE: the exception criteria for input stream interface is a bit
+     * different with it for the output stream interface:
+     * - For ``$offset``, the criteria is ``$offset > strlen($bytes)``
+     * - For ``$length``, the criteria is
+     * ``0 === $length || null === $length || false === $length``
      *
      * @param string $bytes The buffer into which the bytes read should be
      * stored.

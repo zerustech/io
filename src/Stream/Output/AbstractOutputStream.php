@@ -85,7 +85,7 @@ abstract class AbstractOutputStream implements OutputStreamInterface, ClosableIn
 
         $length = 0 > $length ? max(0, strlen($bytes) - $offset + $length) : $length;
 
-        if ($offset > 0 && $offset >= strlen($bytes) || null === $length || false === $length) {
+        if (strlen($bytes) > 0 && $offset >= strlen($bytes) || null === $length || false === $length) {
 
             throw new \OutOfBoundsException(sprintf("Invalid offset or length."));
         }
