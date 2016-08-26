@@ -7,7 +7,7 @@ This changelog references the relavant changes (bug and security fixes) done in
 To get the new features in this major release, check the list at the bottom of
 this file.
 
-* 2.0.1 ()
+* 2.0.1 (2016-08-26)
     * In readSubstring(), allows the computed offset to be zero, if source
       string is ''.
     * In readSubstring(), allows the computed length to be zero, so that empty
@@ -17,6 +17,12 @@ this file.
       string is ''.
     * In writeSubstring(), allows the computed length to be zero, so that empty
       string is allowed to be written.
+    * Deprecated AsciiHexadecimalToBinaryInputStream and moved it to
+      zerustech/postscript package.
+    * Deprecated BinaryToAsciiHexadecimalOutputStream and moved it to
+      zerustech/postscript package.
+    * Fixed inconsistent parameter names in method input()
+    * Code optimization for handling zero length in readSubstring() method.
 
 * 2.0.0 (2016-08-20)
     * Removed getResource() method
