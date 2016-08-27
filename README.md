@@ -324,6 +324,32 @@ if (null !==($filter = $resolver->resolve($in))) {
 
 ```
 
+### LineInputStream ###
+
+This class reads one line each time from the subordinate stream. Unlike the
+``fgets()`` function, it does not have limit on the length of the line.
+
+```php
+<?php
+
+require_once __DIR__.'/vendor/autoload.php';
+
+use ZerusTech\Component\IO\Stream\Input\StringInputStream;
+use ZerusTech\Component\IO\Stream\Input\LineInputStream;
+
+$in = new LineInputStream(new StringInputStream("ABC\nDEF\nHIJ"));
+
+$in->read($line, 4); // reads 4 bytes per time, until EOF or line feed.
+printf("%s", $line); // ABC\n
+
+$in->read($line);
+printf("%s", $line); // DEF\n
+
+$in->read($line);
+printf("%s", $line); // HIJ
+
+```
+
 References
 ----------
 * [The zerustech/io project][2]
