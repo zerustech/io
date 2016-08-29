@@ -113,6 +113,6 @@ class StringInputStreamTest extends \PHPUnit_Framework_TestCase
 
         $stream->skip(1);
         $this->assertEquals(0, $stream->available());
-        $this->assertEquals(14, $stream->getPosition());
+        $this->assertEquals(13, $stream->getPosition());
     }
 }
