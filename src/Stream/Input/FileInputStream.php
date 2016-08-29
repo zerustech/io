@@ -117,7 +117,7 @@ class FileInputStream extends AbstractInputStream
 
         $this->position += $count;
 
-        return $length > 0 && 0 === $count ? -1 : $count;
+        return 0 === $count ? -1 : $count;
     }
 
     /**

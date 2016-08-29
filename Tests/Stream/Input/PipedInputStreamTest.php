@@ -182,8 +182,8 @@ class PipedInputStreamTest extends \PHPUnit_Framework_TestCase
     {
         $input = new PipedInputStream();
         $this->buffer->setValue($input, 'hello');
-        $input->receive(', world!');
 
+        $this->assertEquals(8, $input->receive(', world!'));
         $this->assertEquals('hello, world!', $this->buffer->getValue($input));
     }
 }

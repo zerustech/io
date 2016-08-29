@@ -96,7 +96,7 @@ class PipedInputStream extends AbstractInputStream implements PipedInputStreamIn
 
         $this->buffer = substr($this->buffer, $count).'';
 
-        return $length > 0 && 0 === $count ? -1 : $count;
+        return 0 === $count ? -1 : $count;
     }
 
     /**
@@ -106,7 +106,7 @@ class PipedInputStream extends AbstractInputStream implements PipedInputStreamIn
     {
         $this->buffer .= $string;
 
-        return $this;
+        return strlen($string);
     }
 
     /**
