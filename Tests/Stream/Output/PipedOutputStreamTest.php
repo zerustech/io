@@ -155,7 +155,7 @@ class PipedOutputStreamTest extends \PHPUnit_Framework_TestCase
         // Writes '*' to the piped output stream.
         $data = 'hello';
 
-        $this->output->invoke($output, $data);
+        $this->assertEquals(5, $this->output->invoke($output, $data));
 
         $this->assertEquals($data, $this->buffer->getValue($downstream));
     }
