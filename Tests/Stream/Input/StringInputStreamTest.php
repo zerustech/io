@@ -50,7 +50,7 @@ class StringInputStreamTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider getDataForTestInput
      */
-    public function testInput($buffer, $length, $count, $result)
+    public function testInput($buffer, $length, $count, $result, $position, $available)
     {
         $bytes = '';
 
@@ -59,14 +59,18 @@ class StringInputStreamTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($count, $this->input->invokeArgs($stream, [&$bytes, $length]));
 
         $this->assertEquals($result, $bytes);
+
+        $this->assertEquals($position, $stream->getPosition());
+
+        $this->assertEquals($available, $stream->available());
     }
 
     public function getDataForTestInput()
     {
         return [
-            ['hello', 5, 5, 'hello'],
-            ['hello', 3, 3, 'hel'],
-            ['', 5, -1, ''],
+            ['hello', 5, 5, 'hello', 5, 0],
+            ['hello', 3, 3, 'hel', 3, 2],
+            ['', 5, -1, '', 0, 0],
         ];
     }
 
@@ -100,15 +104,15 @@ class StringInputStreamTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(13, $stream->available());
 
         $stream->skip(3);
-
         $this->assertEquals(10, $stream->available());
+        $this->assertEquals(3, $stream->getPosition());
 
         $stream->skip(10);
-
         $this->assertEquals(0, $stream->available());
+        $this->assertEquals(13, $stream->getPosition());
 
         $stream->skip(1);
-
         $this->assertEquals(0, $stream->available());
+        $this->assertEquals(14, $stream->getPosition());
     }
 }

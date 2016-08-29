@@ -39,6 +39,14 @@ class LineInputStream extends FilterInputStream
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function available()
+    {
+        return strlen($this->buffer) + $this->in->available();
+    }
+
+    /**
      * This method keeps reading a trunk of ``$length`` bytes each time, until a
      * line feed is found or EOF is reached. So parameter ``$length`` represents
      * the reading buffer size.
@@ -55,21 +63,22 @@ class LineInputStream extends FilterInputStream
     {
         $bytes = '';
 
-        if (0 !== strlen($this->buffer)) {
+        if (0 !== strlen($this->buffer) && 1 === preg_match('/^([^\n]*\n)/', $this->buffer, $matches)) {
 
-            if (1 === preg_match('/^([^\n]*\n)/', $this->buffer, $matches)) {
+            $bytes = $matches[1];
 
-                $bytes = $matches[1];
+            $this->buffer = substr($this->buffer, strlen($bytes));
 
-                $this->buffer = substr($this->buffer, strlen($bytes));
+            $this->position -= strlen($this->buffer);
 
-                return strlen($bytes);
-            }
+            return strlen($bytes);
         }
 
         if (-1 === (parent::input($bytes, $length))) {
 
             $bytes = $this->buffer;
+
+            $this->buffer = '';
 
             return 0 === strlen($bytes) ? -1 : strlen($bytes);
         }

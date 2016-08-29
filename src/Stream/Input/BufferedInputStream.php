@@ -38,13 +38,18 @@ class BufferedInputStream extends FilterInputStream
     private $bufferSize = 1024;
 
     /**
+     * @var int The index of the next byte that will be read from the buffer.
+     */
+    private $offset;
+
+    /**
      * @var int The number of valid bytes currently in the buffer. It is also
      * the index of the buffer position one byte past the end of the valid data.
      */
     private $count;
 
     /**
-     * @var int The value of ``$this->position`` when ``mark()`` method was
+     * @var int The value of ``$this->offset`` when ``mark()`` method was
      * called. This is set to -1 if there is no mark set.
      */
     private $mark;
@@ -76,6 +81,10 @@ class BufferedInputStream extends FilterInputStream
 
         $this->bufferSize = $bufferSize;
 
+        $this->buffer = '';
+
+        $this->offset = 0;
+
         $this->count = 0;
 
         $this->mark = -1;
@@ -94,20 +103,22 @@ class BufferedInputStream extends FilterInputStream
 
         while ($remaining > 0) {
 
-            $numberOfBytes = min($remaining, ($this->count - $this->position));
+            $numberOfBytes = min($remaining, ($this->count - $this->offset));
 
             if ($numberOfBytes > 0) {
 
                 // Tries to read bytes, if any, from current buffer first.
 
-                $bytes .= substr($this->buffer, $this->position, $numberOfBytes);
+                $bytes .= substr($this->buffer, $this->offset, $numberOfBytes);
+
+                $this->offset += $numberOfBytes;
 
                 $this->position += $numberOfBytes;
 
                 $remaining -= $numberOfBytes;
             }
 
-            if ($this->position === $this->count && false === $this->fillBuffer()) {
+            if ($this->offset === $this->count && false === $this->fillBuffer()) {
 
                 // If current buffer has become empty, tries to read another
                 // chunks of bytes, up to buffer size, from the underlying
@@ -129,7 +140,7 @@ class BufferedInputStream extends FilterInputStream
      */
     public function available()
     {
-        return $this->count - $this->position + parent::available();
+        return $this->count - $this->offset + parent::available();
     }
 
     /**
@@ -139,7 +150,7 @@ class BufferedInputStream extends FilterInputStream
     {
         $this->markLimit = $limit;
 
-        $this->mark = $this->position;
+        $this->mark = $this->offset;
 
         return $this;
     }
@@ -162,7 +173,9 @@ class BufferedInputStream extends FilterInputStream
             throw new IOException(sprintf("%s", $this->isClosed() ? "Stream closed." : "Invalid mark."));
         }
 
-        $this->position = $this->mark;
+        $this->position -= ($this->offset - $this->mark);
+
+        $this->offset = $this->mark;
 
         return $this;
     }
@@ -176,34 +189,30 @@ class BufferedInputStream extends FilterInputStream
 
         $this->mark = -1;
 
+        $this->buffer = '';
+
+        $this->count = 0;
+
+        $this->offset = 0;
+
         return $this;
     }
 
     /**
-     * Returns the index of the next byte in current stream.
-     *
-     * @return int The index of the next byte.
-     */
-    public function getPosition()
-    {
-        return $this->position;
-    }
-
-    /**
-     * Called to refill the buffer (when count is equal to position).
+     * Called to refill the buffer (when count is equal to offset).
      *
      * @return bool True when at least one additional byte was read into buffer,
      * false otherwise (at EOF).
      */
     private function fillBuffer()
     {
-        if (-1 === $this->mark || ($this->position - $this->mark) >= $this->markLimit) {
+        if (-1 === $this->mark || ($this->offset - $this->mark) >= $this->markLimit) {
 
             //No mark was set, or mark has become invalid.
 
             $this->buffer = '';
 
-            $this->position = $this->count = 0;
+            $this->offset = $this->count = 0;
 
             $this->mark = -1;
 
@@ -214,7 +223,7 @@ class BufferedInputStream extends FilterInputStream
 
             $this->buffer = substr($this->buffer, $this->mark);
 
-            $this->position -= $this->mark;
+            $this->offset -= $this->mark;
 
             $this->count -= $this->mark;
 

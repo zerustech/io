@@ -55,7 +55,7 @@ class LineInputStreamTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider getDataForTestInput
      */
-    public function testInput($data, $offset, $length, $count, $result)
+    public function testInput($data, $offset, $length, $count, $result, $position, $available)
     {
         $in = new StringInputStream($data);
 
@@ -66,22 +66,26 @@ class LineInputStreamTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($count, $this->input->invokeArgs($stream, [&$bytes, $length]));
 
         $this->assertEquals($result, $bytes);
+
+        $this->assertEquals($position, $stream->getPosition());
+
+        $this->assertEquals($available, $stream->available());
     }
 
     public function getDataForTestInput()
     {
         return [
-            ["0123456789\nABCDEF\nGHIJK\nLMN", 0, 1, 11, "0123456789\n"],
-            ["0123456789\nABCDEF\nGHIJK\nLMN", 0, 5, 11, "0123456789\n"],
-            ["0123456789\nABCDEF\nGHIJK\nLMN", 0, 11, 11, "0123456789\n"],
-            ["0123456789\nABCDEF\nGHIJK\nLMN", 0, 12, 11, "0123456789\n"],
-            ["0123456789\nABCDEF\nGHIJK\nLMN", 4, 8, 7, "456789\n"],
-            ["0123456789\nABCDEF\nGHIJK\nLMN", 10, 8, 1, "\n"],
-            ["0123456789\nABCDEF\nGHIJK\nLMN", 11, 8, 7, "ABCDEF\n"],
-            ["0123456789\nABCDEF\nGHIJK\nLMN", 24, 8, 3, "LMN"],
-            ["0123456789\nABCDEF\nGHIJK\nLMN", 25, 8, 2, "MN"],
-            ["0123456789\nABCDEF\nGHIJK\nLMN", 27, 8, -1, ""],
-            ["0123456789\nABCDEF\nGHIJK\nLMN", 28, 8, -1, ""],
+            ["0123456789\nABCDEF\nGHIJK\nLMN", 0, 1, 11, "0123456789\n", 11, 16],
+            ["0123456789\nABCDEF\nGHIJK\nLMN", 0, 5, 11, "0123456789\n", 11, 16],
+            ["0123456789\nABCDEF\nGHIJK\nLMN", 0, 11, 11, "0123456789\n", 11, 16],
+            ["0123456789\nABCDEF\nGHIJK\nLMN", 0, 12, 11, "0123456789\n", 11, 16],
+            ["0123456789\nABCDEF\nGHIJK\nLMN", 4, 8, 7, "456789\n", 11, 16],
+            ["0123456789\nABCDEF\nGHIJK\nLMN", 10, 8, 1, "\n", 11, 16],
+            ["0123456789\nABCDEF\nGHIJK\nLMN", 11, 8, 7, "ABCDEF\n", 18, 9],
+            ["0123456789\nABCDEF\nGHIJK\nLMN", 24, 8, 3, "LMN", 27, 0],
+            ["0123456789\nABCDEF\nGHIJK\nLMN", 25, 8, 2, "MN", 27, 0],
+            ["0123456789\nABCDEF\nGHIJK\nLMN", 27, 8, -1, "", 27, 0],
+            ["0123456789\nABCDEF\nGHIJK\nLMN", 28, 8, -1, "", 27, 0],
         ];
     }
 }

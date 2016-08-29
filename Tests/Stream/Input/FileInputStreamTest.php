@@ -86,12 +86,18 @@ class FileInputStreamTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(5, $this->input->invokeArgs($stream, [&$bytes, 5]));
         $this->assertEquals('hello', $bytes);
+        $this->assertEquals(5, $stream->getPosition());
+        $this->assertEquals(9, $stream->available());
 
         $this->assertEquals(9, $this->input->invokeArgs($stream, [&$bytes, 10]));
         $this->assertEquals(", world!\n", $bytes);
+        $this->assertEquals(14, $stream->getPosition());
+        $this->assertEquals(0, $stream->available());
 
         $this->assertEquals(-1, $this->input->invokeArgs($stream, [&$bytes, 1]));
         $this->assertEquals('', $bytes);
+        $this->assertEquals(14, $stream->getPosition());
+        $this->assertEquals(0, $stream->available());
     }
 
     /**
@@ -154,18 +160,19 @@ class FileInputStreamTest extends \PHPUnit_Framework_TestCase
     {
         $stream = new Input\FileInputStream($this->base.'input_01.txt', 'rb');
 
+        $this->assertEquals(0, $stream->getPosition());
         $this->assertEquals(14, $stream->available());
 
         $stream->skip(4);
-
+        $this->assertEquals(4, $stream->getPosition());
         $this->assertEquals(10, $stream->available());
 
         $stream->skip(10);
-
+        $this->assertEquals(14, $stream->getPosition());
         $this->assertEquals(0, $stream->available());
 
         $stream->skip(1);
-
+        $this->assertEquals(14, $stream->getPosition());
         $this->assertEquals(0, $stream->available());
     }
 }
