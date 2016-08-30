@@ -156,9 +156,9 @@ abstract class AbstractInputStream implements InputStreamInterface, ClosableInte
      * actual number of bytes read is returned as an int. A -1 is returned to
      * indicate the end of the stream.
      *
-     * NOTE: The actual number of bytes read does not always equal to the lenght
+     * NOTE: The actual number of bytes read does not always equal to the length
      * of ``$bytes``. For example, sometimes, a few bytes will be dropped from
-     * the result, so the number of bytes read is greater than the lenght of
+     * the result, so the number of bytes read is greater than the length of
      * ``$bytes``.
      *
      * Subclasses of abstract input stream should override this method with the
