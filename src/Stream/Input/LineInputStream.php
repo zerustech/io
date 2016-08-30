@@ -69,8 +69,6 @@ class LineInputStream extends FilterInputStream
 
             $this->buffer = substr($this->buffer, strlen($bytes));
 
-            $this->position -= strlen($this->buffer);
-
             return strlen($bytes);
         }
 

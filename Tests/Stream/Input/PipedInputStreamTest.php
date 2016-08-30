@@ -155,7 +155,7 @@ class PipedInputStreamTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider getDataForTestInput
      */
-    public function testInput($data, $length, $expected, $count, $position, $available)
+    public function testInput($data, $length, $expected, $count, $available)
     {
         $input = new PipedInputStream();
 
@@ -165,18 +165,16 @@ class PipedInputStreamTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($expected, $bytes);
 
-        $this->assertEquals($position, $input->getPosition());
-
         $this->assertEquals($available, $input->available());
     }
 
     public function getDataForTestInput()
     {
         return [
-            ['***', 1, '*', 1, 1, 2],
-            ['***', 3, '***', 3, 3, 0],
-            ['***', 5, '***', 3, 3, 0],
-            ['', 2, '', -1, 0, 0],
+            ['***', 1, '*', 1, 2],
+            ['***', 3, '***', 3, 0],
+            ['***', 5, '***', 3, 0],
+            ['', 2, '', -1, 0],
         ];
     }
 
@@ -189,8 +187,6 @@ class PipedInputStreamTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(8, $input->receive(', world!'));
 
         $this->assertEquals('hello, world!', $this->buffer->getValue($input));
-
-        $this->assertEquals(0, $input->getPosition());
 
         $this->assertEquals(13, $input->available());
     }

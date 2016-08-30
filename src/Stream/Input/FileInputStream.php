@@ -96,8 +96,6 @@ class FileInputStream extends AbstractInputStream
 
         $this->resource = null;
 
-        $this->position = 0;
-
         return $this;
     }
 
@@ -115,8 +113,6 @@ class FileInputStream extends AbstractInputStream
 
         $count = strlen($bytes);
 
-        $this->position += $count;
-
         return 0 === $count ? -1 : $count;
     }
 
@@ -125,6 +121,6 @@ class FileInputStream extends AbstractInputStream
      */
     public function available()
     {
-        return filesize($this->source) - $this->position;
+        return filesize($this->source) - ftell($this->resource);
     }
 }

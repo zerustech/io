@@ -51,8 +51,6 @@ class FilterInputStream extends AbstractInputStream
     {
         $count = $this->in->input($bytes, $length);
 
-        $this->position = $this->in->getPosition();
-
         return $count;
     }
 

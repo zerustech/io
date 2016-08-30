@@ -27,6 +27,11 @@ class StringInputStream extends AbstractInputStream
     private $buffer;
 
     /**
+     * @var int The index, in the string, of the next byte to read.
+     */
+    private $position;
+
+    /**
      * Constructor.
      *
      * @param string $buffer The underlying input buffer.
@@ -36,6 +41,8 @@ class StringInputStream extends AbstractInputStream
         parent::__construct();
 
         $this->buffer = $buffer;
+
+        $this->position = 0;
     }
 
     /**

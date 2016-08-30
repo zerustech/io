@@ -41,8 +41,6 @@ class AbstractInputStreamTest extends \PHPUnit_Framework_TestCase
         $stub = $this->getMockForAbstractClass('ZerusTech\Component\IO\Stream\Input\AbstractInputStream');
 
         $this->assertFalse($this->closed->getValue($stub));
-
-        $this->assertEquals(0, $stub->getPosition());
     }
 
     /**

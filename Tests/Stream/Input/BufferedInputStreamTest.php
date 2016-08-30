@@ -64,7 +64,6 @@ class BufferedInputStreamTest extends \PHPUnit_Framework_TestCase
         $instance = new BufferedInputStream($in, 4);
 
         $this->assertEquals(4, $this->bufferSize->getValue($instance));
-        $this->assertEquals(0, $instance->getPosition());
         $this->assertEquals(0, $this->offset->getValue($instance));
         $this->assertEquals(0, $this->count->getValue($instance));
         $this->assertEquals(-1, $this->mark->getValue($instance));
@@ -523,27 +522,23 @@ class BufferedInputStreamTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('1', $bytes);
         $this->assertEquals('1234', $this->buffer->getValue($instance));
         $this->assertEquals(1, $this->offset->getValue($instance));
-        $this->assertEquals(1, $instance->getPosition());
         $this->assertEquals(14, $instance->available());
 
         $this->assertEquals(5, $this->input->invokeArgs($instance, [&$bytes, 5]));
         $this->assertEquals('23456', $bytes);
         $this->assertEquals('5678', $this->buffer->getValue($instance));
         $this->assertEquals(2, $this->offset->getValue($instance));
-        $this->assertEquals(6, $instance->getPosition());
         $this->assertEquals(9, $instance->available());
 
         $this->assertEquals(9, $this->input->invokeArgs($instance, [&$bytes, 9]));
         $this->assertEquals('789ABCDEF', $bytes);
         $this->assertEquals('', $this->buffer->getValue($instance));
         $this->assertEquals(0, $this->offset->getValue($instance));
-        $this->assertEquals(15, $instance->getPosition());
         $this->assertEquals(0, $instance->available());
 
         $this->assertEquals(-1, $this->input->invokeArgs($instance, [&$bytes, 1]));
         $this->assertEquals('', $bytes);
         $this->assertEquals('', $this->buffer->getValue($instance));
-        $this->assertEquals(15, $instance->getPosition());
         $this->assertEquals(0, $instance->available());
     }
 
@@ -558,7 +553,6 @@ class BufferedInputStreamTest extends \PHPUnit_Framework_TestCase
         //     ^ (count)
         $this->assertEquals(2, $instance->read($bytes, 2));
         $this->assertEquals('12', $bytes);
-        $this->assertEquals(2, $instance->getPosition());
         $this->assertEquals(13, $instance->available());
 
         // 1234
@@ -573,7 +567,6 @@ class BufferedInputStreamTest extends \PHPUnit_Framework_TestCase
         //       ^ (count)
         $this->assertEquals(3, $instance->read($bytes, 3));
         $this->assertEquals('345', $bytes);
-        $this->assertEquals(5, $instance->getPosition());
         $this->assertEquals(10, $instance->available());
 
         // 345678
@@ -581,7 +574,6 @@ class BufferedInputStreamTest extends \PHPUnit_Framework_TestCase
         // ^ (pos)
         //       ^ (count)
         $instance->reset();
-        $this->assertEquals(2, $instance->getPosition());
         $this->assertEquals(13, $instance->available());
 
         // 345678
@@ -590,7 +582,6 @@ class BufferedInputStreamTest extends \PHPUnit_Framework_TestCase
         //       ^ (count)
         $this->assertEquals(3, $instance->read($bytes, 3));
         $this->assertEquals('345', $bytes);
-        $this->assertEquals(5, $instance->getPosition());
         $this->assertEquals(10, $instance->available());
 
         //  9ABC
@@ -599,7 +590,6 @@ class BufferedInputStreamTest extends \PHPUnit_Framework_TestCase
         //      ^ (count)
         $this->assertEquals(3, $instance->read($bytes, 3));
         $this->assertEquals('678', $bytes);
-        $this->assertEquals(8, $instance->getPosition());
         $this->assertEquals(7, $instance->available());
     }
 
@@ -614,7 +604,6 @@ class BufferedInputStreamTest extends \PHPUnit_Framework_TestCase
         //        ^ (count)
         $this->assertEquals(5, $instance->read($bytes, 5));
         $this->assertEquals('GHIJK', $bytes);
-        $this->assertEquals(5, $instance->getPosition());
         $this->assertEquals(16, $instance->available());
 
         //  GHIJKL
@@ -635,7 +624,6 @@ class BufferedInputStreamTest extends \PHPUnit_Framework_TestCase
         // under this circumstance.
         $this->assertEquals(5, $instance->read($bytes, 5));
         $this->assertEquals('L1234', $bytes);
-        $this->assertEquals(10, $instance->getPosition());
         $this->assertEquals(11, $instance->available());
 
         //  L12345
@@ -644,7 +632,6 @@ class BufferedInputStreamTest extends \PHPUnit_Framework_TestCase
         //        ^ (count)
         //
         $instance->reset();
-        $this->assertEquals(5, $instance->getPosition());
         $this->assertEquals(16, $instance->available());
 
         //  L12345
@@ -654,7 +641,6 @@ class BufferedInputStreamTest extends \PHPUnit_Framework_TestCase
         //
         $this->assertEquals(5, $instance->read($bytes, 5));
         $this->assertEquals('L1234', $bytes);
-        $this->assertEquals(10, $instance->getPosition());
         $this->assertEquals(11, $instance->available());
     }
 
@@ -711,15 +697,12 @@ class BufferedInputStreamTest extends \PHPUnit_Framework_TestCase
         $in = new StringInputStream('0123456789ABCDEF');
         $instance = new BufferedInputStream($in, 4);
 
-        $this->assertEquals(0, $instance->getPosition());
         $this->assertEquals(16, $instance->available());
 
         $this->assertEquals(6, $instance->skip(6));
-        $this->assertEquals(6, $instance->getPosition());
         $this->assertEquals(10, $instance->available());
 
         $this->assertEquals(10, $instance->skip(11));
-        $this->assertEquals(16, $instance->getPosition());
         $this->assertEquals(0, $instance->available());
     }
 

@@ -28,18 +28,11 @@ abstract class AbstractInputStream implements InputStreamInterface, ClosableInte
     protected $closed;
 
     /**
-     * @var int The index of the next byte that will be read from the stream.
-     */
-    protected $position;
-
-    /**
      * Create a new input stream instance.
      */
     public function __construct()
     {
         $this->closed = false;
-
-        $this->position = 0;
     }
 
     /**
@@ -150,8 +143,6 @@ abstract class AbstractInputStream implements InputStreamInterface, ClosableInte
 
         $this->closed = true;
 
-        $this->position = 0;
-
         return $this;
     }
 
@@ -163,16 +154,6 @@ abstract class AbstractInputStream implements InputStreamInterface, ClosableInte
     public function isClosed()
     {
         return $this->closed;
-    }
-
-    /**
-     * Returns the index of the next byte in current stream.
-     *
-     * @return int The index of the next byte.
-     */
-    public function getPosition()
-    {
-        return $this->position;
     }
 
     /**

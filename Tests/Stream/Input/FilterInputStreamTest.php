@@ -50,7 +50,7 @@ class FilterInputStreamTest extends \PHPUnit_Framework_TestCase
     public function testProxyMethods()
     {
         $input = $this->getMockBuilder('ZerusTech\Component\IO\Stream\Input\AbstractInputStream')
-                      ->setMethods(['input', 'available', 'mark', 'markSupported', 'reset', 'close', 'getPosition'])
+                      ->setMethods(['input', 'available', 'mark', 'markSupported', 'reset', 'close'])
                       ->getMock();
 
         $instance = new FilterInputStream($input);
@@ -58,15 +58,11 @@ class FilterInputStreamTest extends \PHPUnit_Framework_TestCase
         $data = "hello";
 
         $input->expects($this->exactly(2))->method('input')->will($this->returnCallback(
-            function(&$bytes, $length) use (&$data, &$position) {
+            function(&$bytes, $length) use (&$data) {
                 $bytes = substr($data, 0, $length);
                 $data = substr($data, $length);
-                $count = 0 === strlen($bytes) ? -1 : strlen($bytes);
-                $position += $count;
-                return $count;
+                return 0 === strlen($bytes) ? -1 : strlen($bytes);
             }));
-
-        $input->method('getPosition')->will($this->returnCallback(function() use(&$position) {return $position;}));
 
         $input->expects($this->once())->method('available')->willReturn(strlen($data));
         $input->expects($this->once())->method('mark')->with(5)->will($this->returnSelf());
@@ -81,7 +77,6 @@ class FilterInputStreamTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(1, $instance->skip(1));
         $this->assertEquals(4, $this->input->invokeArgs($instance, [&$bytes, 4]));
         $this->assertEquals('ello', $bytes);
-        $this->assertEquals(5, $instance->getPosition());
         $this->assertFalse($instance->isClosed());
         $this->assertSame($instance, $instance->close());
         $this->assertTrue($instance->isClosed());

@@ -113,8 +113,6 @@ class BufferedInputStream extends FilterInputStream
 
                 $this->offset += $numberOfBytes;
 
-                $this->position += $numberOfBytes;
-
                 $remaining -= $numberOfBytes;
             }
 
@@ -172,8 +170,6 @@ class BufferedInputStream extends FilterInputStream
 
             throw new IOException(sprintf("%s", $this->isClosed() ? "Stream closed." : "Invalid mark."));
         }
-
-        $this->position -= ($this->offset - $this->mark);
 
         $this->offset = $this->mark;
 

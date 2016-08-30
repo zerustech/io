@@ -28,9 +28,6 @@ class LineInputStreamTest extends \PHPUnit_Framework_TestCase
         $this->buffer = $this->ref->getProperty('buffer');
         $this->buffer->setAccessible(true);
 
-        $this->position = $this->ref->getProperty('position');
-        $this->position->setAccessible(true);
-
         $this->input = $this->ref->getMethod('input');
         $this->input->setAccessible(true);
     }
@@ -38,7 +35,6 @@ class LineInputStreamTest extends \PHPUnit_Framework_TestCase
     public function tearDown()
     {
         $this->buffer = null;
-        $this->position = null;
         $this->input = null;
         $this->ref = null;
     }
@@ -49,13 +45,12 @@ class LineInputStreamTest extends \PHPUnit_Framework_TestCase
         $instance = new LineInputStream($in);
 
         $this->assertEquals('', $this->buffer->getValue($instance));
-        $this->assertEquals(0, $this->position->getValue($instance));
     }
 
     /**
      * @dataProvider getDataForTestInput
      */
-    public function testInput($data, $offset, $length, $count, $result, $position, $available)
+    public function testInput($data, $offset, $length, $count, $result, $available)
     {
         $in = new StringInputStream($data);
 
@@ -67,25 +62,23 @@ class LineInputStreamTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($result, $bytes);
 
-        $this->assertEquals($position, $stream->getPosition());
-
         $this->assertEquals($available, $stream->available());
     }
 
     public function getDataForTestInput()
     {
         return [
-            ["0123456789\nABCDEF\nGHIJK\nLMN", 0, 1, 11, "0123456789\n", 11, 16],
-            ["0123456789\nABCDEF\nGHIJK\nLMN", 0, 5, 11, "0123456789\n", 11, 16],
-            ["0123456789\nABCDEF\nGHIJK\nLMN", 0, 11, 11, "0123456789\n", 11, 16],
-            ["0123456789\nABCDEF\nGHIJK\nLMN", 0, 12, 11, "0123456789\n", 11, 16],
-            ["0123456789\nABCDEF\nGHIJK\nLMN", 4, 8, 7, "456789\n", 11, 16],
-            ["0123456789\nABCDEF\nGHIJK\nLMN", 10, 8, 1, "\n", 11, 16],
-            ["0123456789\nABCDEF\nGHIJK\nLMN", 11, 8, 7, "ABCDEF\n", 18, 9],
-            ["0123456789\nABCDEF\nGHIJK\nLMN", 24, 8, 3, "LMN", 27, 0],
-            ["0123456789\nABCDEF\nGHIJK\nLMN", 25, 8, 2, "MN", 27, 0],
-            ["0123456789\nABCDEF\nGHIJK\nLMN", 27, 8, -1, "", 27, 0],
-            ["0123456789\nABCDEF\nGHIJK\nLMN", 28, 8, -1, "", 27, 0],
+            ["0123456789\nABCDEF\nGHIJK\nLMN", 0, 1, 11, "0123456789\n", 16],
+            ["0123456789\nABCDEF\nGHIJK\nLMN", 0, 5, 11, "0123456789\n", 16],
+            ["0123456789\nABCDEF\nGHIJK\nLMN", 0, 11, 11, "0123456789\n", 16],
+            ["0123456789\nABCDEF\nGHIJK\nLMN", 0, 12, 11, "0123456789\n", 16],
+            ["0123456789\nABCDEF\nGHIJK\nLMN", 4, 8, 7, "456789\n", 16],
+            ["0123456789\nABCDEF\nGHIJK\nLMN", 10, 8, 1, "\n", 16],
+            ["0123456789\nABCDEF\nGHIJK\nLMN", 11, 8, 7, "ABCDEF\n", 9],
+            ["0123456789\nABCDEF\nGHIJK\nLMN", 24, 8, 3, "LMN", 0],
+            ["0123456789\nABCDEF\nGHIJK\nLMN", 25, 8, 2, "MN", 0],
+            ["0123456789\nABCDEF\nGHIJK\nLMN", 27, 8, -1, "", 0],
+            ["0123456789\nABCDEF\nGHIJK\nLMN", 28, 8, -1, "", 0],
         ];
     }
 }

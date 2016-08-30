@@ -43,14 +43,13 @@ class StringInputStreamTest extends \PHPUnit_Framework_TestCase
     {
         $stream = new Input\StringInputStream('hello');
         $this->assertEquals('hello', $this->buffer->getValue($stream));
-        $this->assertEquals(0, $stream->getPosition());
         $this->assertFalse($stream->isClosed());
     }
 
     /**
      * @dataProvider getDataForTestInput
      */
-    public function testInput($buffer, $length, $count, $result, $position, $available)
+    public function testInput($buffer, $length, $count, $result, $available)
     {
         $bytes = '';
 
@@ -60,17 +59,15 @@ class StringInputStreamTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($result, $bytes);
 
-        $this->assertEquals($position, $stream->getPosition());
-
         $this->assertEquals($available, $stream->available());
     }
 
     public function getDataForTestInput()
     {
         return [
-            ['hello', 5, 5, 'hello', 5, 0],
-            ['hello', 3, 3, 'hel', 3, 2],
-            ['', 5, -1, '', 0, 0],
+            ['hello', 5, 5, 'hello', 0],
+            ['hello', 3, 3, 'hel', 2],
+            ['', 5, -1, '', 0],
         ];
     }
 
@@ -78,11 +75,9 @@ class StringInputStreamTest extends \PHPUnit_Framework_TestCase
     {
         $stream = new Input\StringInputStream('hello');
         $stream->skip(5);
-        $this->assertEquals(5, $stream->getPosition());
 
         $this->assertSame($stream, $stream->close());
         $this->assertTrue($stream->isClosed());
-        $this->assertEquals(0, $stream->getPosition());
         $this->assertNull($this->buffer->getValue($stream));
     }
 
@@ -105,14 +100,11 @@ class StringInputStreamTest extends \PHPUnit_Framework_TestCase
 
         $stream->skip(3);
         $this->assertEquals(10, $stream->available());
-        $this->assertEquals(3, $stream->getPosition());
 
         $stream->skip(10);
         $this->assertEquals(0, $stream->available());
-        $this->assertEquals(13, $stream->getPosition());
 
         $stream->skip(1);
         $this->assertEquals(0, $stream->available());
-        $this->assertEquals(13, $stream->getPosition());
     }
 }
