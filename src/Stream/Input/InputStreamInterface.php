@@ -143,8 +143,9 @@ interface InputStreamInterface
      * amount.
      *
      * @param int $length The requested number of bytes to skip.
+     * @param int $buffer The maximum number of bytes to be read each time.
      * @return int The actual number of bytes skipped.
      * @throws IOException If an error occurs.
      */
-    public function skip($length);
+    public function skip($length, $buffer = 1024);
 }

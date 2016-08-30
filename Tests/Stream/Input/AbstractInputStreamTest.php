@@ -168,7 +168,7 @@ class AbstractInputStreamTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider getDataForTestSkip
      */
-    public function testSkip($data, $length, $count)
+    public function testSkip($data, $length, $buffer, $count)
     {
         $stub = $this
             ->getMockBuilder('ZerusTech\Component\IO\Stream\Input\AbstractInputStream')
@@ -178,18 +178,30 @@ class AbstractInputStreamTest extends \PHPUnit_Framework_TestCase
 
         $stub->method('input')->will($this->returnCallback(function(&$bytes, $length) use(&$data) {$bytes = substr($data, 0, $length); $data = substr($data, $length); return 0 === strlen($bytes) ? -1 : strlen($bytes); }));
 
-        $this->assertEquals($count, $stub->skip($length));
+        $this->assertEquals($count, $stub->skip($length, $buffer));
     }
 
     public function getDataForTestSkip()
     {
         return [
-            ['*****', 5, 5],
-            ['*****', 6, 5],
-            ['*****', 3, 3],
-            ['', 1, 0],
-            [null, 1, 0],
-            [false, 1, 0],
+            ['0123456789ABCDEF', -1, 1024, 0],
+            ['0123456789ABCDEF', 0, 1024, 0],
+            ['0123456789ABCDEF', 1, 1024, 1],
+            ['0123456789ABCDEF', 5, 1024, 5],
+            ['0123456789ABCDEF', 16, 1024, 16],
+            ['0123456789ABCDEF', 17, 1024, 16],
+            ['', 1, 1024, 0],
+            [null, 1, 1024, 0],
+            [false, 1, 1024, 0],
+            ['0123456789ABCDEF', -1, 2, 0],
+            ['0123456789ABCDEF', 0, 2, 0],
+            ['0123456789ABCDEF', 1, 2, 1],
+            ['0123456789ABCDEF', 5, 2, 5],
+            ['0123456789ABCDEF', 16, 2, 16],
+            ['0123456789ABCDEF', 17, 2, 16],
+            ['', 1, 2, 0],
+            [null, 1, 2, 0],
+            [false, 1, 2, 0],
         ];
     }
 }

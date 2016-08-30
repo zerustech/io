@@ -102,21 +102,15 @@ abstract class AbstractInputStream implements InputStreamInterface, ClosableInte
     }
 
     /**
-     * This method skips the specified number of bytes in the stream. It retruns
-     * the actual number of bytes skipped, which may be less than the requred
-     * amount.
-     *
-     * @param int $length The requested number of bytes to skip.
-     * @return int The actual number of bytes skipped.
-     * @throws IOException If an error occurs.
+     * {@inheritdoc}
      */
-    public function skip($length)
+    public function skip($length, $buffer = 1024)
     {
         $remaining = $length;
 
-        $bufferSize = min(2048, $length);
-
         while ($remaining > 0) {
+
+            $bufferSize = min($buffer, $length, $remaining);
 
             $numberOfBytes = $this->input($bytes, $bufferSize);
 
@@ -161,6 +155,11 @@ abstract class AbstractInputStream implements InputStreamInterface, ClosableInte
      * stream and stores the bytes read into the caller supplied buffer. The
      * actual number of bytes read is returned as an int. A -1 is returned to
      * indicate the end of the stream.
+     *
+     * NOTE: The actual number of bytes read does not always equal to the lenght
+     * of ``$bytes``. For example, sometimes, a few bytes will be dropped from
+     * the result, so the number of bytes read is greater than the lenght of
+     * ``$bytes``.
      *
      * Subclasses of abstract input stream should override this method with the
      * actual logic for manuplulating the byte data.
