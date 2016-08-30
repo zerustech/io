@@ -166,30 +166,12 @@ class BufferedInputStream extends FilterInputStream
      */
     public function reset()
     {
-        if (-1 === $this->mark) {
+        if (-1 === $this->mark || true === $this->closed) {
 
             throw new IOException(sprintf("%s", $this->isClosed() ? "Stream closed." : "Invalid mark."));
         }
 
         $this->offset = $this->mark;
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function close()
-    {
-        parent::close();
-
-        $this->mark = -1;
-
-        $this->buffer = '';
-
-        $this->count = 0;
-
-        $this->offset = 0;
 
         return $this;
     }

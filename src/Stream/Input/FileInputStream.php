@@ -94,8 +94,6 @@ class FileInputStream extends AbstractInputStream
 
         $this->closed = true;
 
-        $this->resource = null;
-
         return $this;
     }
 

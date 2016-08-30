@@ -62,18 +62,6 @@ class StringInputStream extends AbstractInputStream
     /**
      * {@inheritdoc}
      */
-    public function close()
-    {
-        parent::close();
-
-        $this->buffer = null;
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function available()
     {
         return strlen($this->buffer) - $this->position;

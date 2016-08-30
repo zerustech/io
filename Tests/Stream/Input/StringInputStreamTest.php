@@ -75,25 +75,4 @@ class StringInputStreamTest extends \PHPUnit_Framework_TestCase
             ['', 5, -1, '', 0],
         ];
     }
-
-    public function testClose()
-    {
-        $stream = new Input\StringInputStream('hello');
-        $stream->skip(5);
-
-        $this->assertSame($stream, $stream->close());
-        $this->assertTrue($stream->isClosed());
-        $this->assertNull($this->buffer->getValue($stream));
-    }
-
-    /**
-     * @expectedException ZerusTech\Component\IO\Exception\IOException
-     * @expectedExceptionMessage Stream is already closed, can't be closed again.
-     */
-    public function testCloseOnClosedStream()
-    {
-        $stream = new Input\StringInputStream('hello');
-        $stream->close();
-        $stream->close();
-    }
 }

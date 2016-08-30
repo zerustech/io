@@ -117,8 +117,6 @@ class FileInputStreamTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($stream, $stream->close());
 
         $this->assertTrue($stream->isClosed());
-
-        $this->assertNull($this->resource->getValue($stream));
     }
 
     /**

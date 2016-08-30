@@ -68,6 +68,7 @@ class BufferedInputStreamTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(0, $this->count->getValue($instance));
         $this->assertEquals(-1, $this->mark->getValue($instance));
         $this->assertEquals(0, $this->markLimit->getValue($instance));
+        $this->assertTrue($instance->markSupported());
     }
 
     /**
@@ -142,6 +143,7 @@ class BufferedInputStreamTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(-1, $mark->getValue($instance));
         $this->assertEquals(0, $offset->getValue($instance));
         $this->assertEquals(4, $count->getValue($instance));
+        $this->assertEquals(15, $instance->available());
 
 
         // In this case, there are exactly 'buffer size' bytes in buffer and the
@@ -181,6 +183,7 @@ class BufferedInputStreamTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(-1, $mark->getValue($instance));
         $this->assertEquals(0, $offset->getValue($instance));
         $this->assertEquals(3, $count->getValue($instance));
+        $this->assertEquals(3, $instance->available());
 
         // In this case, both the buffer and the subordinate stream are empty.
         //
@@ -217,7 +220,7 @@ class BufferedInputStreamTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(-1, $mark->getValue($instance));
         $this->assertEquals(0, $offset->getValue($instance));
         $this->assertEquals(0, $count->getValue($instance));
-
+        $this->assertEquals(0, $instance->available());
 
         // Mark exists (mark >= 0) and is still valid: pos - mark < limit, the
         // method shifts all bytes after mark inclusively to the begining of the
@@ -250,7 +253,7 @@ class BufferedInputStreamTest extends \PHPUnit_Framework_TestCase
         // -----------------
         // buffer: HIJK1234
         // mark:   ^
-        // pos:       ^
+        // pos:        ^
         // count:          ^
         // available: 56789ABCDEF
         $in = new StringInputStream('123456789ABCDEF');
@@ -265,6 +268,7 @@ class BufferedInputStreamTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(0, $mark->getValue($instance));
         $this->assertEquals(4, $offset->getValue($instance));
         $this->assertEquals(8, $count->getValue($instance));
+        $this->assertEquals(15, $instance->available());
 
         // In this case, the number of bytes in the buffer equals to the
         // 'buffer size' and which of the subordinate stream is less than the
@@ -303,6 +307,7 @@ class BufferedInputStreamTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(0, $mark->getValue($instance));
         $this->assertEquals(3, $offset->getValue($instance));
         $this->assertEquals(6, $count->getValue($instance));
+        $this->assertEquals(3, $instance->available());
 
 
         // In this case, the number of bytes in the buffer is greater than the
@@ -342,6 +347,8 @@ class BufferedInputStreamTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(0, $mark->getValue($instance));
         $this->assertEquals(4, $offset->getValue($instance));
         $this->assertEquals(4, $count->getValue($instance));
+        $this->assertEquals(0, $instance->available());
+
 
         // In this case, the number of bytes in the buffer and the subordinate
         // stream are both greater than the 'buffer size'.
@@ -379,6 +386,7 @@ class BufferedInputStreamTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(0, $mark->getValue($instance));
         $this->assertEquals(5, $offset->getValue($instance));
         $this->assertEquals(9, $count->getValue($instance));
+        $this->assertEquals(15, $instance->available());
 
 
         // In this case, the number of bytes in the buffer is equal to the
@@ -424,6 +432,7 @@ class BufferedInputStreamTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(0, $mark->getValue($instance));
         $this->assertEquals(1, $offset->getValue($instance));
         $this->assertEquals(7, $count->getValue($instance));
+        $this->assertEquals(15, $instance->available());
 
 
         // Mark exists (mark > 0), but has become invalid: pos - mark >= limit,
@@ -470,6 +479,7 @@ class BufferedInputStreamTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(-1, $mark->getValue($instance));
         $this->assertEquals(0, $offset->getValue($instance));
         $this->assertEquals(6, $count->getValue($instance));
+        $this->assertEquals(15, $instance->available());
 
 
         // In this case, the number of bytes in the buffer is greater than
@@ -511,6 +521,7 @@ class BufferedInputStreamTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(-1, $mark->getValue($instance));
         $this->assertEquals(0, $offset->getValue($instance));
         $this->assertEquals(3, $count->getValue($instance));
+        $this->assertEquals(3, $instance->available());
     }
 
     public function testInput()
@@ -690,25 +701,5 @@ class BufferedInputStreamTest extends \PHPUnit_Framework_TestCase
         $instance->mark(4);
         $instance->close();
         $instance->reset();
-    }
-
-    public function testMiscMethods()
-    {
-        $in = new StringInputStream('0123456789ABCDEF');
-        $instance = new BufferedInputStream($in, 4);
-
-        $this->assertTrue($instance->markSupported());
-
-        $instance->skip(2);
-        $instance->mark(4);
-
-        $this->assertFalse($instance->isClosed());
-        $this->assertEquals(2, $this->mark->getValue($instance));
-        $this->assertEquals(2, $this->offset->getValue($instance));
-
-        $instance->close();
-        $this->assertTrue($instance->isClosed());
-        $this->assertEquals(-1, $this->mark->getValue($instance));
-        $this->assertEquals(0, $this->offset->getValue($instance));
     }
 }
