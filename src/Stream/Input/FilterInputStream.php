@@ -49,9 +49,7 @@ class FilterInputStream extends AbstractInputStream
      */
     protected function input(&$bytes, $length)
     {
-        $count = $this->in->input($bytes, $length);
-
-        return $count;
+        return $this->in->input($bytes, $length);
     }
 
     /**
