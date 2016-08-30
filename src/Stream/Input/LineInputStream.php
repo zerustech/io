@@ -55,11 +55,8 @@ class LineInputStream extends FilterInputStream
      *
      * The actual number of bytes read is returned as as int. A -1 is returned
      * to indicate the end of the stream.
-     *
-     * @param int $length The number of bytes it reads from the subordinate
-     * stream each time, 1024 by default.
      */
-    protected function input(&$bytes, $length = 1024)
+    protected function input(&$bytes, $length)
     {
         $bytes = '';
 
