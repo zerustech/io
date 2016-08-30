@@ -148,20 +148,4 @@ class FileInputStreamTest extends \PHPUnit_Framework_TestCase
 
         $stream->close();
     }
-
-    public function testAvaialble()
-    {
-        $stream = new Input\FileInputStream($this->base.'input_01.txt', 'rb');
-
-        $this->assertEquals(14, $stream->available());
-
-        $stream->skip(4);
-        $this->assertEquals(10, $stream->available());
-
-        $stream->skip(10);
-        $this->assertEquals(0, $stream->available());
-
-        $stream->skip(1);
-        $this->assertEquals(0, $stream->available());
-    }
 }

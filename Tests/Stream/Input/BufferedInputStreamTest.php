@@ -692,20 +692,6 @@ class BufferedInputStreamTest extends \PHPUnit_Framework_TestCase
         $instance->reset();
     }
 
-    public function testSkipAndAvailable()
-    {
-        $in = new StringInputStream('0123456789ABCDEF');
-        $instance = new BufferedInputStream($in, 4);
-
-        $this->assertEquals(16, $instance->available());
-
-        $this->assertEquals(6, $instance->skip(6));
-        $this->assertEquals(10, $instance->available());
-
-        $this->assertEquals(10, $instance->skip(11));
-        $this->assertEquals(0, $instance->available());
-    }
-
     public function testMiscMethods()
     {
         $in = new StringInputStream('0123456789ABCDEF');
