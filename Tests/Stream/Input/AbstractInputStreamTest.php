@@ -54,18 +54,10 @@ class AbstractInputStreamTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(0, $stub->available());
         $this->assertSame($stub, $stub->mark(100));
         $this->assertFalse($stub->markSupported());
-
-        $bytes = '';
-        $stub
-            ->method('input')
-            ->with($bytes, 5)
-            ->willReturn(5);
-
-       $this->assertEquals(5, $stub->skip(5));
-       $this->assertFalse($stub->isClosed());
-       $stub->close();
-       $this->assertTrue($stub->isClosed());
-       $stub->reset();
+        $this->assertFalse($stub->isClosed());
+        $stub->close();
+        $this->assertTrue($stub->isClosed());
+        $stub->reset();
     }
 
     /**
