@@ -128,9 +128,7 @@ class BufferedInputStream extends FilterInputStream
             }
         }
 
-        $count = $length - $remaining;
-
-        return 0 === $count && $length > 0 ? -1 : $count;
+        return 0 === $length - $remaining ? -1 : $length - $remaining;
     }
 
     /**

@@ -109,9 +109,7 @@ class FileInputStream extends AbstractInputStream
             throw new IOException(sprintf("An unknown error occured when reading data from file %s.", $this->source));
         }
 
-        $count = strlen($bytes);
-
-        return 0 === $count ? -1 : $count;
+        return 0 === strlen($bytes) ? -1 : strlen($bytes);
     }
 
     /**

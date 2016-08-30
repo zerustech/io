@@ -143,15 +143,6 @@ class PipedInputStreamTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($upstream->isClosed());
     }
 
-    public function testAvailable()
-    {
-        $input = new PipedInputStream();
-
-        $this->buffer->setValue($input, '**');
-
-        $this->assertEquals(2, $input->available());
-    }
-
     /**
      * @dataProvider getDataForTestInput
      */
