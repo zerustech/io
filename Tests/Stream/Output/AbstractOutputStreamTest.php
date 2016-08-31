@@ -44,25 +44,6 @@ class AbstractOutputStreamTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($this->closed->getValue($stub));
     }
 
-    /**
-     * @expectedException ZerusTech\Component\IO\Exception\IOException
-     * @expectedExceptionMessage Stream is already closed, can't be closed again.
-     */
-    public function testDummyMethods()
-    {
-        $stub = $this->getMockForAbstractClass('ZerusTech\Component\IO\Stream\Output\AbstractOutputStream', []);
-
-        $this->assertSame($stub, $stub->flush());
-
-        $this->assertFalse($stub->isClosed());
-
-        $stub->close();
-
-        $this->assertTrue($stub->isClosed());
-
-        $stub->close();
-    }
-
     public function testWrite()
     {
         $stub = $this->getMockBuilder('ZerusTech\Component\IO\Stream\Output\AbstractOutputStream')->setMethods(['writeSubstring', 'output'])->getMock();
@@ -126,5 +107,24 @@ class AbstractOutputStreamTest extends \PHPUnit_Framework_TestCase
             ['hello', 0, false],
             ['hello', 0, null],
        ];
+    }
+
+    /**
+     * @expectedException ZerusTech\Component\IO\Exception\IOException
+     * @expectedExceptionMessage Stream is already closed, can't be closed again.
+     */
+    public function testMiscMethods()
+    {
+        $stub = $this->getMockForAbstractClass('ZerusTech\Component\IO\Stream\Output\AbstractOutputStream', []);
+
+        $this->assertSame($stub, $stub->flush());
+
+        $this->assertFalse($stub->isClosed());
+
+        $stub->close();
+
+        $this->assertTrue($stub->isClosed());
+
+        $stub->close();
     }
 }
