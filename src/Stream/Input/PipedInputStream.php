@@ -92,9 +92,9 @@ class PipedInputStream extends AbstractInputStream implements PipedInputStreamIn
     {
         $count = min($length, strlen($this->buffer));
 
-        $bytes = substr($this->buffer, 0, $count).'';
+        $bytes = (string)substr($this->buffer, 0, $count);
 
-        $this->buffer = substr($this->buffer, $count).'';
+        $this->buffer = (string)substr($this->buffer, $count);
 
         return 0 === $count ? -1 : $count;
     }

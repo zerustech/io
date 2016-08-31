@@ -95,7 +95,7 @@ abstract class AbstractOutputStream implements OutputStreamInterface, ClosableIn
             throw new IOException(sprintf("Stream is already closed, can't be written."));
         }
 
-        return $this->output(substr($bytes, $offset, $length).'');
+        return $this->output((string)substr($bytes, $offset, $length));
     }
 
     /**

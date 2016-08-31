@@ -126,7 +126,7 @@ abstract class AbstractInputStream implements InputStreamInterface, ClosableInte
     }
 
     /**
-     * Closes current stream.
+     * {@inheritdoc}
      */
     public function close()
     {
@@ -141,9 +141,7 @@ abstract class AbstractInputStream implements InputStreamInterface, ClosableInte
     }
 
     /**
-     * Checks whether current stream is closed or not.
-     *
-     * @return bool True if current stream is closed, and false otherwise.
+     * {@inheritdoc}
      */
     public function isClosed()
     {
