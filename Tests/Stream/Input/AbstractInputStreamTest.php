@@ -43,34 +43,6 @@ class AbstractInputStreamTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($this->closed->getValue($stub));
     }
 
-    /**
-     * @expectedException ZerusTech\Component\IO\Exception\IOException
-     * @expectedExceptionMessage mark/reset not supported.
-     */
-    public function testDummyMethods()
-    {
-        $stub = $this->getMockForAbstractClass('ZerusTech\Component\IO\Stream\Input\AbstractInputStream', []);
-
-        $this->assertEquals(0, $stub->available());
-        $this->assertSame($stub, $stub->mark(100));
-        $this->assertFalse($stub->markSupported());
-        $this->assertFalse($stub->isClosed());
-        $stub->close();
-        $this->assertTrue($stub->isClosed());
-        $stub->reset();
-    }
-
-    /**
-     * @expectedException ZerusTech\Component\IO\Exception\IOException
-     * @expectedExceptionMessage Stream is already closed, can't be closed again.
-     */
-    public function testCloseException()
-    {
-        $stub = $this->getMockForAbstractClass('ZerusTech\Component\IO\Stream\Input\AbstractInputStream', []);
-        $stub->close();
-        $stub->close();
-    }
-
     public function testRead()
     {
         $stub = $this
@@ -195,5 +167,33 @@ class AbstractInputStreamTest extends \PHPUnit_Framework_TestCase
             [null, 1, 2, 0],
             [false, 1, 2, 0],
         ];
+    }
+
+    /**
+     * @expectedException ZerusTech\Component\IO\Exception\IOException
+     * @expectedExceptionMessage mark/reset not supported.
+     */
+    public function testMiscMethods()
+    {
+        $stub = $this->getMockForAbstractClass('ZerusTech\Component\IO\Stream\Input\AbstractInputStream', []);
+
+        $this->assertEquals(0, $stub->available());
+        $this->assertSame($stub, $stub->mark(100));
+        $this->assertFalse($stub->markSupported());
+        $this->assertFalse($stub->isClosed());
+        $stub->close();
+        $this->assertTrue($stub->isClosed());
+        $stub->reset();
+    }
+
+    /**
+     * @expectedException ZerusTech\Component\IO\Exception\IOException
+     * @expectedExceptionMessage Stream is already closed, can't be closed again.
+     */
+    public function testCloseException()
+    {
+        $stub = $this->getMockForAbstractClass('ZerusTech\Component\IO\Stream\Input\AbstractInputStream', []);
+        $stub->close();
+        $stub->close();
     }
 }
