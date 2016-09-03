@@ -54,11 +54,11 @@ class AbstractOutputStreamTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider getDataForTestWriteSubstring
      */
-    public function testWriteSubstring($sourceBytes, $offset, $length, $actualBytes)
+    public function testWriteSubstring($bytes, $offset, $length, $expected)
     {
         $stub = $this->getMockBuilder('ZerusTech\Component\IO\Stream\Output\AbstractOutputStream')->setMethods(['output'])->getMock();
-        $stub->expects($this->once())->method('output')->with($actualBytes)->willReturn(strlen($actualBytes));
-        $this->assertEquals(strlen($actualBytes), $stub->writeSubstring($sourceBytes, $offset, $length));
+        $stub->expects($this->once())->method('output')->with($expected)->willReturn(strlen($expected));
+        $this->assertEquals(strlen($expected), $stub->writeSubstring($bytes, $offset, $length));
     }
 
     public function getDataForTestWriteSubstring()
@@ -94,10 +94,10 @@ class AbstractOutputStreamTest extends \PHPUnit_Framework_TestCase
      * @expectedException \OutOfBoundsException
      * @expectedExceptionMessage Invalid offset or length.
      */
-    public function testWriteSubstringException($sourceBytes, $offset, $length)
+    public function testWriteSubstringException($bytes, $offset, $length)
     {
         $stub = $this->getMockBuilder('ZerusTech\Component\IO\Stream\Output\AbstractOutputStream')->setMethods(['output'])->getMock();
-        $stub->writeSubstring($sourceBytes, $offset, $length);
+        $stub->writeSubstring($bytes, $offset, $length);
     }
 
     public function getDataForTestWriteSubstringException()
