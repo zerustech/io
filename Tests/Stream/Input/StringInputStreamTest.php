@@ -54,7 +54,7 @@ class StringInputStreamTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider getDataForTestInput
      */
-    public function testInput($buffer, $length, $count, $result, $available)
+    public function testInput($buffer, $length, $count, $expected, $available)
     {
         $bytes = '';
 
@@ -62,7 +62,7 @@ class StringInputStreamTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($count, $this->input->invokeArgs($stream, [&$bytes, $length]));
 
-        $this->assertEquals($result, $bytes);
+        $this->assertEquals($expected, $bytes);
 
         $this->assertEquals($available, $stream->available());
     }

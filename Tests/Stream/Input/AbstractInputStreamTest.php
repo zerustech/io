@@ -60,7 +60,7 @@ class AbstractInputStreamTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider getDataForTestReadSubstring
      */
-    public function testReadSubstring($source, $offset, $length, $data, $count, $result)
+    public function testReadSubstring($bytes, $offset, $length, $data, $count, $expected)
     {
         $stub = $this
             ->getMockBuilder('ZerusTech\Component\IO\Stream\Input\AbstractInputStream')
@@ -70,9 +70,9 @@ class AbstractInputStreamTest extends \PHPUnit_Framework_TestCase
 
         $stub->method('input')->will($this->returnCallback(function(&$bytes, $length) use($data) {$bytes = substr($data, 0, $length); return $length > 0 && 0 === strlen($bytes) ? -1 : strlen($bytes); }));
 
-        $this->assertEquals($count, $stub->readSubstring($source, $offset, $length));
+        $this->assertEquals($count, $stub->readSubstring($bytes, $offset, $length));
 
-        $this->assertEquals($result, $source);
+        $this->assertEquals($expected, $bytes);
     }
 
     public function getDataForTestReadSubstring()
@@ -104,7 +104,7 @@ class AbstractInputStreamTest extends \PHPUnit_Framework_TestCase
      * @expectedException \OutOfBoundsException
      * @expectedExceptionMessage Invalid offset or length.
      */
-    public function testReadSubstringException($source, $offset, $length)
+    public function testReadSubstringException($bytes, $offset, $length)
     {
         $stub = $this
             ->getMockBuilder('ZerusTech\Component\IO\Stream\Input\AbstractInputStream')
@@ -112,7 +112,7 @@ class AbstractInputStreamTest extends \PHPUnit_Framework_TestCase
             ->setMethods(['input'])
             ->getMock();
 
-        $stub->readSubstring($source, $offset, $length);
+        $stub->readSubstring($bytes, $offset, $length);
     }
 
     public function getDataForTestReadSubstringException()
