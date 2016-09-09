@@ -43,9 +43,6 @@ class FilterInputStream extends AbstractInputStream
 
     /**
      * {@inheritdoc}
-     *
-     * Redirects request to the subordinate input stream by calling
-     * ``$this->in->input()``
      */
     protected function input(&$bytes, $length)
     {
@@ -54,9 +51,6 @@ class FilterInputStream extends AbstractInputStream
 
     /**
      * {@inheritdoc}
-     *
-     * Redirects request to the subordinate input stream by calling
-     * ``$this->in->available()``
      */
     public function available()
     {
@@ -65,9 +59,6 @@ class FilterInputStream extends AbstractInputStream
 
     /**
      * {@inheritdoc}
-     *
-     * Redirects request to the subordinate input stream by calling
-     * ``$this->in->mark()``
      */
     public function mark($limit)
     {
@@ -78,9 +69,6 @@ class FilterInputStream extends AbstractInputStream
 
     /**
      * {@inheritdoc}
-     *
-     * Redirects request to the subordinate input stream by calling
-     * ``$this->in->markSupported()``
      */
     public function markSupported()
     {
@@ -89,9 +77,6 @@ class FilterInputStream extends AbstractInputStream
 
     /**
      * {@inheritdoc}
-     *
-     * Redirects request to the subordinate input stream by calling
-     * ``$this->in->reset()``
      */
     public function reset()
     {
@@ -102,9 +87,6 @@ class FilterInputStream extends AbstractInputStream
 
     /**
      * {@inheritdoc}
-     *
-     * Redirects request to the subordinate input stream by calling
-     * ``$this->in->close()``
      */
     public function close()
     {
