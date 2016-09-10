@@ -50,7 +50,7 @@ class LineInputStream extends FilterInputStream
      */
     public function available()
     {
-        return strlen($this->buffer) + $this->in->available();
+        return strlen($this->buffer) + parent::available();
     }
 
     /**
