@@ -29,13 +29,20 @@ class LineInputStream extends FilterInputStream
     private $buffer;
 
     /**
+     * @var int The length of buffer.
+     */
+    private $bufferSize = 32;
+
+    /**
      * {@inheritdoc}
      */
-    public function __construct(InputStreamInterface $in)
+    public function __construct(InputStreamInterface $in, $bufferSize = 32)
     {
         parent::__construct($in);
 
         $this->buffer = '';
+
+        $this->bufferSize = $bufferSize;
     }
 
     /**
@@ -47,39 +54,39 @@ class LineInputStream extends FilterInputStream
     }
 
     /**
-     * This method keeps reading a trunk of ``$length`` bytes each time, until a
-     * line feed is found or EOF is reached. So parameter ``$length`` represents
-     * the reading buffer size.
+     * This method keeps reading bytes from current input stream, untill a
+     * line feed or EOF is reached. The byes read, including the line feed, is
+     * returned.
      *
-     * Unlike its parent class, this method may read more bytes than ``$length``.
-     *
-     * The actual number of bytes read is returned as as int. A -1 is returned
-     * to indicate the end of the stream.
+     * @return string The line read, or null if EOF.
      */
-    protected function input(&$bytes, $length)
+    public function readLine()
     {
-        $bytes = '';
+        $line = null;
 
-        if (0 !== strlen($this->buffer) && 1 === preg_match('/^([^\n]*\n)/', $this->buffer, $matches)) {
+        while (1 !== ($matched = preg_match('/^([^\n]*\n)/m', $this->buffer, $matches))) {
 
-            $bytes = $matches[1];
+            if (-1 === parent::read($buffer, $this->bufferSize)) {
 
-            $this->buffer = substr($this->buffer, strlen($bytes));
+                break;
+            }
 
-            return strlen($bytes);
+            $this->buffer .= $buffer;
         }
 
-        if (-1 === (parent::input($bytes, $length))) {
+        if (1 === $matched) {
 
-            $bytes = $this->buffer;
+            $line = $matches[1];
+
+            $this->buffer = substr($this->buffer, strlen($line));
+
+        } else if (strlen($this->buffer) > 0) {
+
+            $line = $this->buffer;
 
             $this->buffer = '';
-
-            return 0 === strlen($bytes) ? -1 : strlen($bytes);
         }
 
-        $this->buffer .= $bytes;
-
-        return $this->input($bytes, $length);
+        return $line;
     }
 }
