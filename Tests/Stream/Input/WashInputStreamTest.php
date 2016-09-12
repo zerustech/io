@@ -96,6 +96,8 @@ class WashInputStreamTest extends \PHPUnit_Framework_TestCase
             ["6865\t6C6C6F\n", 5, 5, "C6C6F", 5, 5, 0],
             ["6865\t6C6C6F\n", 6, 4, "6C6F", 4, 6, 0],
             ["6865\t6C6C6F\n", 10, 1, "", -1, 10, 0],
+            ["68656C6C6F\n", 0, 2, "68", 2, 0, 1],
+            ["6865\n6C6C6F\r", 0, 6, "68656C", 6, 0, 1],
         ];
     }
 }
