@@ -11,16 +11,13 @@
 
 namespace ZerusTech\Component\IO\Stream\Input;
 
-use ZerusTech\Component\IO\Stream\Input\InputStreamInterface;
-use ZerusTech\Component\IO\Stream\Input\FilterInputStream;
-
 /**
  * This class reads bytes from the subordinate input stream and
  * cleans up specifal characters (by default, "\n", "\r", "\t" and " ") from them.
  *
  * @author Michael Lee <michael.lee@zerustech.com>
  */
-class WashInputStream extends FilterInputStream
+class WashInputStream extends UnpredictableFilterInputStream
 {
     /**
      * @var string The regex pattern for searching characters to be washed.
@@ -49,20 +46,6 @@ class WashInputStream extends FilterInputStream
     /**
      * {@inheritdoc}
      *
-     * This methods returns 1 if the subordinate input stream is still
-     * available, or 0 otherwise.
-     *
-     * @return int 1 if the subordinate input stream is till available, or 0
-     * otherwise.
-     */
-    public function available()
-    {
-        return parent::available() > 0 ? 1 : 0;
-    }
-
-    /**
-     * {@inheritdoc}
-     *
      * This method keeps reading bytes from the subordinate input
      * stream and cleaning up space characters from them, untill ``$length``
      * clean bytes have been generated, or EOF has been reached.
@@ -75,13 +58,13 @@ class WashInputStream extends FilterInputStream
 
         $bytes = '';
 
-        while ($remaining > 0 && -1 !== parent::input($hex, $remaining)) {
+        while ($remaining > 0 && -1 !== parent::input($source, $remaining)) {
 
-            $hex = preg_replace($this->searchPattern, $this->replacePattern, $hex);
+            $source = preg_replace($this->searchPattern, $this->replacePattern, $source);
 
-            $bytes .= $hex;
+            $bytes .= $source;
 
-            $remaining -= strlen($hex);
+            $remaining -= strlen($source);
         }
 
         return $remaining === $length ? -1 : $length - $remaining;
