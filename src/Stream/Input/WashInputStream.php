@@ -17,7 +17,7 @@ namespace ZerusTech\Component\IO\Stream\Input;
  *
  * @author Michael Lee <michael.lee@zerustech.com>
  */
-class WashInputStream extends UnpredictableFilterInputStream
+class WashInputStream extends UncountableFilterInputStream
 {
     /**
      * @var string The regex pattern for searching characters to be washed.
