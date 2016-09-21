@@ -28,8 +28,8 @@ class StringInputStreamTest extends \PHPUnit_Framework_TestCase
         $this->buffer = $this->ref->getProperty('buffer');
         $this->buffer->setAccessible(true);
 
-        $this->position = $this->ref->getProperty('position');
-        $this->position->setAccessible(true);
+        $this->offset = $this->ref->getProperty('offset');
+        $this->offset->setAccessible(true);
 
         $this->input = $this->ref->getMethod('input');
         $this->input->setAccessible(true);
@@ -38,7 +38,7 @@ class StringInputStreamTest extends \PHPUnit_Framework_TestCase
     public function tearDown()
     {
         $this->input = null;
-        $this->position = null;
+        $this->offset = null;
         $this->buffer = null;
         $this->ref = null;
     }
@@ -47,7 +47,7 @@ class StringInputStreamTest extends \PHPUnit_Framework_TestCase
     {
         $stream = new Input\StringInputStream('hello');
         $this->assertEquals('hello', $this->buffer->getValue($stream));
-        $this->assertEquals(0, $this->position->getValue($stream));
+        $this->assertEquals(0, $this->offset->getValue($stream));
         $this->assertFalse($stream->isClosed());
     }
 

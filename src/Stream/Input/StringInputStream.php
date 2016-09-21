@@ -29,7 +29,7 @@ class StringInputStream extends AbstractInputStream
     /**
      * @var int The index, in the string, of the next byte to read.
      */
-    private $position;
+    private $offset;
 
     /**
      * Constructor.
@@ -42,7 +42,7 @@ class StringInputStream extends AbstractInputStream
 
         $this->buffer = $buffer;
 
-        $this->position = 0;
+        $this->offset = 0;
     }
 
     /**
@@ -50,11 +50,11 @@ class StringInputStream extends AbstractInputStream
      */
     protected function input(&$bytes, $length)
     {
-        $bytes = substr($this->buffer, $this->position, min($length, strlen($this->buffer) - $this->position));
+        $bytes = substr($this->buffer, $this->offset, min($length, strlen($this->buffer) - $this->offset));
 
         $count = strlen($bytes);
 
-        $this->position += $count;
+        $this->offset += $count;
 
         return 0 === $count ? -1 : $count;
     }
@@ -64,6 +64,6 @@ class StringInputStream extends AbstractInputStream
      */
     public function available()
     {
-        return strlen($this->buffer) - $this->position;
+        return strlen($this->buffer) - $this->offset;
     }
 }
