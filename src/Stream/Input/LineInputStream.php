@@ -20,37 +20,14 @@ use ZerusTech\Component\IO\Exception\IOException;
  *
  * @author Michael Lee <michael.lee@zerustech.com>
  */
-class LineInputStream extends FilterInputStream
+class LineInputStream extends BufferableFilterInputStream
 {
     /**
-     * @var string The buffer used for storing bytes read from the subordinate
-     * stream before a line feed or EOF is reached.
-     */
-    private $buffer;
-
-    /**
-     * @var int The length of buffer.
-     */
-    private $readBufferSize = 128;
-
-    /**
      * {@inheritdoc}
      */
-    public function __construct(InputStreamInterface $in, $readBufferSize = 128)
+    public function __construct(InputStreamInterface $in, $readBufferSize = 1024)
     {
-        parent::__construct($in);
-
-        $this->buffer = '';
-
-        $this->readBufferSize = $readBufferSize;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function available()
-    {
-        return strlen($this->buffer) + parent::available();
+        parent::__construct($in, $readBufferSize);
     }
 
     /**
@@ -68,7 +45,7 @@ class LineInputStream extends FilterInputStream
 
         while (1 !== ($matched = preg_match('/^([^\n]*\n)/', $this->buffer, $matches))) {
 
-            if (-1 === parent::read($bytes, $this->readBufferSize)) {
+            if (-1 === $this->in->read($bytes, $this->readBufferSize)) {
 
                 break;
             }
