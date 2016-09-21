@@ -98,7 +98,7 @@ abstract class AbstractInputStream implements InputStreamInterface, ClosableInte
      */
     public function reset()
     {
-        throw new IOException(sprintf("%s", "mark/reset not supported."));
+        throw new IOException(sprintf("mark/reset not supported."));
     }
 
     /**
