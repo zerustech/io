@@ -27,15 +27,11 @@ class LineInputStreamTest extends \PHPUnit_Framework_TestCase
 
         $this->buffer = $this->ref->getProperty('buffer');
         $this->buffer->setAccessible(true);
-
-        $this->readBufferSize = $this->ref->getProperty('readBufferSize');
-        $this->readBufferSize->setAccessible(true);
     }
 
     public function tearDown()
     {
         $this->buffer = null;
-        $this->readBufferSize = null;
         $this->input = null;
         $this->ref = null;
     }
@@ -46,7 +42,6 @@ class LineInputStreamTest extends \PHPUnit_Framework_TestCase
         $instance = new LineInputStream($in);
 
         $this->assertEquals('', $this->buffer->getValue($instance));
-        $this->assertEquals(128, $this->readBufferSize->getValue($instance));
     }
 
     /**
@@ -56,9 +51,9 @@ class LineInputStreamTest extends \PHPUnit_Framework_TestCase
     {
         $in = new StringInputStream($data);
 
-        $in->skip($offset);
-
         $stream = new LineInputStream($in);
+
+        $stream->skip($offset);
 
         $this->assertEquals($expected, $stream->readLine());
 

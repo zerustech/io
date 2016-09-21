@@ -40,16 +40,25 @@ class BufferableFilterInputStream extends FilterInputStream
     protected $buffer;
 
     /**
+     * @var int The maximum number of bytes to be read when pre-fetching bytes
+     * from the subordinate input stream.
+     */
+    protected $readBufferSize;
+
+    /**
      * Create a bufferable filter input stream instance with the specified
      * subordinate input stream.
      *
      * @param InputStreamInterface $in The subordinate input stream.
+     * @param int $readBufferSize The maximum number of bytes to be pre-fetched.
      */
-    public function __construct(InputStreamInterface $in)
+    public function __construct(InputStreamInterface $in, $readBufferSize = 1024)
     {
         parent::__construct($in);
 
         $this->buffer = '';
+
+        $this->readBufferSize = $readBufferSize;
     }
 
     /**

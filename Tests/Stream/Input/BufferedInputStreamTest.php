@@ -28,9 +28,6 @@ class BufferedInputStreamTest extends \PHPUnit_Framework_TestCase
         $this->buffer = $this->ref->getProperty('buffer');
         $this->buffer->setAccessible(true);
 
-        $this->readBufferSize = $this->ref->getProperty('readBufferSize');
-        $this->readBufferSize->setAccessible(true);
-
         $this->offset = $this->ref->getProperty('offset');
         $this->offset->setAccessible(true);
 
@@ -52,7 +49,7 @@ class BufferedInputStreamTest extends \PHPUnit_Framework_TestCase
 
     public function tearDown()
     {
-        $this->buffer = $this->readBufferSize = $this->count = null;
+        $this->buffer = $this->count = null;
         $this->mark = $this->markLimit = $this->offset = null;
         $this->input = $this->fillBuffer = null;
         $this->ref = null;
@@ -63,7 +60,6 @@ class BufferedInputStreamTest extends \PHPUnit_Framework_TestCase
         $in = new StringInputStream('hello, world');
         $instance = new BufferedInputStream($in, 4);
 
-        $this->assertEquals(4, $this->readBufferSize->getValue($instance));
         $this->assertEquals(0, $this->offset->getValue($instance));
         $this->assertEquals(0, $this->count->getValue($instance));
         $this->assertEquals(-1, $this->mark->getValue($instance));
