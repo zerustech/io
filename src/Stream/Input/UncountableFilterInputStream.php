@@ -25,11 +25,6 @@ namespace ZerusTech\Component\IO\Stream\Input;
 class UncountableFilterInputStream extends FilterInputStream
 {
     /**
-     * @var string buffer The internal buffer that stores pre-fetched bytes.
-     */
-    protected $buffer;
-
-    /**
      * This method creates a new unpredictable input stream.
      *
      * @param InputStreamInterface $in The subordinate input stream.
@@ -37,8 +32,6 @@ class UncountableFilterInputStream extends FilterInputStream
     public function __construct(InputStreamInterface $in)
     {
         parent::__construct($in);
-
-        $this->buffer = '';
     }
 
     /**
@@ -52,6 +45,6 @@ class UncountableFilterInputStream extends FilterInputStream
      */
     public function available()
     {
-        return (strlen($this->buffer) + parent::available()) > 0 ? 1 : 0;
+        return $this->in->available() > 0 ? 1 : 0;
     }
 }
