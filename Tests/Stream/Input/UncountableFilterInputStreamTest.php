@@ -28,10 +28,14 @@ class UncountableFilterInputStreamTest extends \PHPUnit_Framework_TestCase
 
         $this->in = $this->ref->getProperty('in');
         $this->in->setAccessible(true);
+
+        $this->buffer = $this->ref->getProperty('buffer');
+        $this->buffer->setAccessible(true);
     }
 
     public function tearDown()
     {
+        $this->buffer = null;
         $this->in = null;
         $this->ref = null;
     }
@@ -41,6 +45,7 @@ class UncountableFilterInputStreamTest extends \PHPUnit_Framework_TestCase
         $in = new StringInputStream('hello');
         $stream = new UncountableFilterInputStream($in);
         $this->assertSame($in, $this->in->getValue($stream));
+        $this->assertEquals('', $this->buffer->getValue($stream));
     }
 
     public function testAvailable()
