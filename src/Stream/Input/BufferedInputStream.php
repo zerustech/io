@@ -103,17 +103,17 @@ class BufferedInputStream extends FilterInputStream
 
         while ($remaining > 0) {
 
-            $numberOfBytes = min($remaining, ($this->count - $this->offset));
+            $count = min($remaining, ($this->count - $this->offset));
 
-            if ($numberOfBytes > 0) {
+            if ($count > 0) {
 
                 // Tries to read bytes, if any, from current buffer first.
 
-                $bytes .= substr($this->buffer, $this->offset, $numberOfBytes);
+                $bytes .= substr($this->buffer, $this->offset, $count);
 
-                $this->offset += $numberOfBytes;
+                $this->offset += $count;
 
-                $remaining -= $numberOfBytes;
+                $remaining -= $count;
             }
 
             if ($this->offset === $this->count && false === $this->fillBuffer()) {
