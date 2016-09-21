@@ -52,7 +52,8 @@ interface InputStreamInterface
      * the buffer.
      *
      * If ``$length < 0``,
-     * ``$length = max(0, strlen($bytes) - $offset + $length)``.
+     * ``$length = max(0, strlen($bytes) - $offset + $length)``. That many of
+     * bytes will be omitted from the end of the string.
      *
      * Finally:
      *
