@@ -23,13 +23,8 @@ use ZerusTech\Component\IO\Exception\IOException;
  *
  * @author Michael Lee <michael.lee@zerustech.com>
  */
-class BufferedInputStream extends FilterInputStream
+class BufferedInputStream extends BufferableFilterInputStream
 {
-    /**
-     * @var string The buffer used for storing data from the underlying stream.
-     */
-    private $buffer;
-
     /**
      * @var int This is the initial buffer size. When the buffer is grown
      * because of marking requirements, it will be grown by buffer size
@@ -80,8 +75,6 @@ class BufferedInputStream extends FilterInputStream
         }
 
         $this->readBufferSize = $readBufferSize;
-
-        $this->buffer = '';
 
         $this->offset = 0;
 
@@ -136,7 +129,7 @@ class BufferedInputStream extends FilterInputStream
      */
     public function available()
     {
-        return $this->count - $this->offset + parent::available();
+        return $this->count - $this->offset + $this->in->available();
     }
 
     /**
