@@ -25,7 +25,7 @@ namespace ZerusTech\Component\IO\Stream\Input;
 class UncountableFilterInputStream extends FilterInputStream
 {
     /**
-     * This method creates a new unpredictable input stream.
+     * This method creates a new uncountable filter input stream.
      *
      * @param InputStreamInterface $in The subordinate input stream.
      */
