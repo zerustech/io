@@ -35,7 +35,7 @@ class BufferedInputStream extends FilterInputStream
      * because of marking requirements, it will be grown by buffer size
      * increments. The underlying stream will be read in chunks of buffer size.
      */
-    private $bufferSize = 1024;
+    private $readBufferSize = 1024;
 
     /**
      * @var int The index of the next byte that will be read from the buffer.
@@ -66,20 +66,20 @@ class BufferedInputStream extends FilterInputStream
      * the caller.
      *
      * @param InputStreamInterface $in The subordinate stream to read from.
-     * @param int $bufferSize The buffer size to use.
+     * @param int $readBufferSize The buffer size to use.
      *
      * @throws \InvalidArgumentException When the buffer size is smaller than 1.
      */
-    public function __construct(InputStreamInterface $in, $bufferSize = 1024)
+    public function __construct(InputStreamInterface $in, $readBufferSize = 1024)
     {
         parent::__construct($in);
 
-        if ($bufferSize <= 0) {
+        if ($readBufferSize <= 0) {
 
             throw new \InvalidArgumentException(sprintf("The buffer size must be greater than %d.", 0));
         }
 
-        $this->bufferSize = $bufferSize;
+        $this->readBufferSize = $readBufferSize;
 
         $this->buffer = '';
 
@@ -206,7 +206,7 @@ class BufferedInputStream extends FilterInputStream
             $this->mark = 0;
         }
 
-        $count = max(0, $this->in->input($bytes, $this->bufferSize));
+        $count = max(0, $this->in->input($bytes, $this->readBufferSize));
 
         $this->buffer .= $bytes;
 

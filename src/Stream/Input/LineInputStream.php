@@ -31,18 +31,18 @@ class LineInputStream extends FilterInputStream
     /**
      * @var int The length of buffer.
      */
-    private $bufferSize = 32;
+    private $readBufferSize = 128;
 
     /**
      * {@inheritdoc}
      */
-    public function __construct(InputStreamInterface $in, $bufferSize = 32)
+    public function __construct(InputStreamInterface $in, $readBufferSize = 128)
     {
         parent::__construct($in);
 
         $this->buffer = '';
 
-        $this->bufferSize = $bufferSize;
+        $this->readBufferSize = $readBufferSize;
     }
 
     /**
@@ -54,9 +54,11 @@ class LineInputStream extends FilterInputStream
     }
 
     /**
-     * This method keeps reading bytes from current input stream, untill a
-     * line feed or EOF is reached. The byes read, including the line feed, is
-     * returned.
+     * Read a line from the input stream. A line is terminated by a NL or CR-NL
+     * sequence.
+     *
+     * The line terminator is also returned as part of the returned string.
+     * Returns null if no data is available.
      *
      * @return string The line read, or null if EOF.
      */
@@ -64,14 +66,14 @@ class LineInputStream extends FilterInputStream
     {
         $line = null;
 
-        while (1 !== ($matched = preg_match('/^([^\n]*\n)/m', $this->buffer, $matches))) {
+        while (1 !== ($matched = preg_match('/^([^\n]*\n)/', $this->buffer, $matches))) {
 
-            if (-1 === parent::read($buffer, $this->bufferSize)) {
+            if (-1 === parent::read($bytes, $this->readBufferSize)) {
 
                 break;
             }
 
-            $this->buffer .= $buffer;
+            $this->buffer .= $bytes;
         }
 
         if (1 === $matched) {

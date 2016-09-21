@@ -104,8 +104,26 @@ abstract class AbstractInputStream implements InputStreamInterface, ClosableInte
     /**
      * {@inheritdoc}
      */
-    public function skip($length, $buffer = 1024)
+    public function skip($length, $readBufferSize = 2048)
     {
+        $readBufferSize = min($readBufferSize, $length);
+
+        $remaining = $length;
+
+        while ($remaining > 0) {
+
+            $count = $this->read($bytes, min($remaining, $readBufferSize));
+
+            if (-1 === $count) {
+
+                break;
+            }
+
+            $remaining -= $count;
+        }
+
+        return $length - $remaining;
+        /*
         $remaining = $steps = $length;
 
         while ($steps > 0) {
@@ -123,6 +141,7 @@ abstract class AbstractInputStream implements InputStreamInterface, ClosableInte
         }
 
         return $length - $remaining;
+        */
     }
 
     /**
