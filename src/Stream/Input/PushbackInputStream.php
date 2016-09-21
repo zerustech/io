@@ -14,9 +14,9 @@ namespace ZerusTech\Component\IO\Stream\Input;
 use ZerusTech\Component\IO\Exception\IOException;
 
 /**
- * This subclass of ``BufferableFilterInputStream`` provides the ability to unread data
- * from a stream. If maintains an internal buffer of unread data that is
- * supplied to the next read operation. This is conceptually similar to
+ * This subclass of ``BufferableFilterInputStream`` provides the ability to
+ * unread data from a stream. It maintains an internal buffer of unread data
+ * that is supplied to the next read operation. This is conceptually similar to
  * mark/reset functionality, except that in this case the position to reset the
  * stream to does not need to be known
  *

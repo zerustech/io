@@ -135,15 +135,29 @@ class PushbackInputStreamTest extends \PHPUnit_Framework_TestCase
 
     public function testPushback()
     {
-        $in = new StringInputStream('world');
+        $instance = new PushbackInputStream(new StringInputStream('hello world'), 5);
 
-        $instance = new PushbackInputStream($in, 16);
+        $this->assertEquals(5, $instance->read($bytes, 5));
 
-        $this->pushback->invoke($instance, 'hello');
+        $this->assertEquals('hello', $bytes);
+
+        $this->assertEquals(6, $instance->available());
+
+        $this->assertEquals('', $this->buffer->getValue($instance));
+
+        $this->pushback->invoke($instance, $bytes);
+
+        $this->assertEquals(11, $instance->available());
 
         $this->assertEquals('hello', $this->buffer->getValue($instance));
 
-        $this->assertEquals(10, $instance->available());
+        $this->assertEquals(5, $instance->read($bytes, 5));
+
+        $this->assertEquals('hello', $bytes);
+
+        $this->assertEquals(6, $instance->available());
+
+        $this->assertEquals('', $this->buffer->getValue($instance));
     }
 
     /**
