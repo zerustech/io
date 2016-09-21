@@ -123,25 +123,6 @@ abstract class AbstractInputStream implements InputStreamInterface, ClosableInte
         }
 
         return $length - $remaining;
-        /*
-        $remaining = $steps = $length;
-
-        while ($steps > 0) {
-
-            $buffer = min($buffer, $length, $remaining);
-
-            if (-1 === ($count = $this->input($bytes, $buffer))) {
-
-                break;
-            }
-
-            $remaining -= $count;
-
-            $steps -= $buffer;
-        }
-
-        return $length - $remaining;
-        */
     }
 
     /**
