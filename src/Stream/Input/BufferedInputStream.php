@@ -26,13 +26,6 @@ use ZerusTech\Component\IO\Exception\IOException;
 class BufferedInputStream extends BufferableFilterInputStream
 {
     /**
-     * @var int This is the initial buffer size. When the buffer is grown
-     * because of marking requirements, it will be grown by buffer size
-     * increments. The underlying stream will be read in chunks of buffer size.
-     */
-    private $readBufferSize = 1024;
-
-    /**
      * @var int The index of the next byte that will be read from the buffer.
      */
     private $offset;
