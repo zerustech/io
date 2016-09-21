@@ -52,22 +52,10 @@ class BufferedInputStream extends BufferableFilterInputStream
      * This method initializes a new buffered input stream that will read from
      * the specified subordinate stream with a buffer size that is specified by
      * the caller.
-     *
-     * @param InputStreamInterface $in The subordinate stream to read from.
-     * @param int $readBufferSize The buffer size to use.
-     *
-     * @throws \InvalidArgumentException When the buffer size is smaller than 1.
      */
     public function __construct(InputStreamInterface $in, $readBufferSize = 1024)
     {
-        parent::__construct($in);
-
-        if ($readBufferSize <= 0) {
-
-            throw new \InvalidArgumentException(sprintf("The buffer size must be greater than %d.", 0));
-        }
-
-        $this->readBufferSize = $readBufferSize;
+        parent::__construct($in, $readBufferSize);
 
         $this->offset = 0;
 

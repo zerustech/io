@@ -51,10 +51,18 @@ class BufferableFilterInputStream extends FilterInputStream
      *
      * @param InputStreamInterface $in The subordinate input stream.
      * @param int $readBufferSize The maximum number of bytes to be pre-fetched.
+     *
+     * @throws \InvalidArgumentException When the read buffer size is smaller
+     * than 1.
      */
     public function __construct(InputStreamInterface $in, $readBufferSize = 1024)
     {
         parent::__construct($in);
+
+        if ($readBufferSize <= 0) {
+
+            throw new \InvalidArgumentException(sprintf("The read buffer size must be greater than %d.", 0));
+        }
 
         $this->buffer = '';
 
